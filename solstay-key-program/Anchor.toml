@@ -1,7 +1,7 @@
 [features]
 seeds = false
 [programs.devnet]
-solstay_key_program = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+solstay_key_program = "8PCTb312rhuBU7pM1btq6Dy9XPjrEnqEPQySxxADRjGA"
 
 [registry]
 url = "https://anchor.projectserum.com"

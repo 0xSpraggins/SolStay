@@ -117,6 +117,8 @@ pub mod solstay_key_program {
 
         Ok(())
     }
+
+    //pub fn transfer() {}
 }
 
 // Set the account structure of NFT
