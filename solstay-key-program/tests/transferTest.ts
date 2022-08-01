@@ -20,12 +20,13 @@ describe("NFT Transfer", async () => {
 
         const saleAmount = 1 * anchor.web3.LAMPORTS_PER_SOL;
         const mint: anchor.web3.PublicKey = new anchor.web3.PublicKey(
-            ""
+            "CshtxwQwwCf8HuSN1kdtmBCGhMiqtvs4CvLCgkFYRyeo"
         );
-
+        
+        console.log(__dirname);
         const buyer: anchor.web3.Keypair = await createKeypairFromFile(__dirname + "/Keypairs/customer1.json");
 
-        console.log(`Buyers Pubklic Key: ${buyer.publicKey}`);
+        console.log(`Buyers Public Key: ${buyer.publicKey}`);
 
         const ownerTokenAddress = await anchor.utils.token.associatedAddress({
             mint: mint,

@@ -18,7 +18,6 @@ describe("solstay-key-program", () => {
   );
 
   it("Mint Key", async () => {
-
     // Create mint address and associated token account address
     const mintKeypair: anchor.web3.Keypair = anchor.web3.Keypair.generate();
     const tokenAddress = await anchor.utils.token.associatedAddress({
@@ -38,7 +37,7 @@ describe("solstay-key-program", () => {
     ))[0];
     console.log("Metadata created!");
 
-    const masterEditioAddress = (await anchor.web3.PublicKey.findProgramAddress(
+    const masterEditionAddress = (await anchor.web3.PublicKey.findProgramAddress(
       [
         Buffer.from("metadata"),
         TOKEN_METADATA_PROGRAM_ID.toBuffer(),
@@ -50,22 +49,19 @@ describe("solstay-key-program", () => {
     console.log("Master Edition Metadata created");
 
     // Use the mint function from the solstay_key_program
-    try {
-      await program.methods.mint(
-        testNFTName, testNFTSymbol, testNFTUri
-      ).accounts({
-        metadata: metadataAddress,
-        masterEditionMetadata: masterEditioAddress,
-        mint: mintKeypair.publicKey,
-        tokenAccount: tokenAddress,
-        mintAuthority: wallet.publicKey,
-        mplTokenMetadata: TOKEN_METADATA_PROGRAM_ID,
-      })
-      .signers([mintKeypair])
-      .rpc();
-      console.log("NFT Minted");
-    } catch (error) {
-      console.log(error);
-    }
+    await program.methods.mint(
+      testNFTName, testNFTSymbol, testNFTUri
+    ).accounts({
+      metadata: metadataAddress,
+      masterEditionMetadata: masterEditionAddress,
+      mint: mintKeypair.publicKey,
+      tokenAccount: tokenAddress,
+      mintAuthority: wallet.publicKey,
+      mplTokenMetadata: TOKEN_METADATA_PROGRAM_ID,
+    })
+    .signers([mintKeypair])
+    .rpc();
+    
+    console.log("NFT Minted");
   });
 });

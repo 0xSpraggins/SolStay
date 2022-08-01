@@ -9,6 +9,7 @@ pub fn mint(
     nft_uri: String,
 ) -> Result<()> {
     // Step 1: Create Mint Account
+    msg!("Creating Mint Account....");
     system_program::create_account(
         CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
@@ -21,19 +22,21 @@ pub fn mint(
         82,
         &ctx.accounts.token_program.key(),
     )?;
+    msg!("Mint Account Created");
 
     token::initialize_mint(
         CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
             token::InitializeMint {
-                mint: ctx.accounts.token_program.to_account_info(),
-                rent: ctx.accounts.mint_authority.to_account_info(),
+                mint: ctx.accounts.mint.to_account_info(),
+                rent: ctx.accounts.rent.to_account_info(),
             },
         ),
         0,
         &ctx.accounts.mint_authority.key(),
         Some(&ctx.accounts.mint_authority.key()),
     )?;
+    msg!("Mint Initialized");
 
     // Step 2: Create Token Account
     associated_token::create(CpiContext::new(
@@ -48,19 +51,24 @@ pub fn mint(
             rent: ctx.accounts.rent.to_account_info(),
         },
     ))?;
+
     // Step 3: Mint NFT to Token Account
+    msg!("NFT minting to token account");
     token::mint_to(
         CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
             token::MintTo {
                 mint: ctx.accounts.mint.to_account_info(),
-                to: ctx.accounts.associated_token_program.to_account_info(),
+                to: ctx.accounts.token_account.to_account_info(),
                 authority: ctx.accounts.mint_authority.to_account_info(),
             },
         ),
         1,
     )?;
+    msg!("Minting Complete");
+
     // Step 4: Create Metadata accounts for metadata and master_edition_metadata
+    msg!("Creating metadata...");
     invoke(
         &metaplex_instruction::create_metadata_accounts_v3(
             TOKEN_METADATA_ID,
@@ -85,9 +93,11 @@ pub fn mint(
             ctx.accounts.mint.to_account_info(),
             ctx.accounts.token_account.to_account_info(),
             ctx.accounts.mint_authority.to_account_info(),
+            ctx.accounts.rent.to_account_info(),
         ],
     )?;
 
+    msg!("Creating master edition...");
     invoke(
         &metaplex_instruction::create_master_edition_v3(
             TOKEN_METADATA_ID,
@@ -104,10 +114,12 @@ pub fn mint(
             ctx.accounts.metadata.to_account_info(),
             ctx.accounts.mint.to_account_info(),
             ctx.accounts.token_account.to_account_info(),
-            ctx.accounts.mint.to_account_info(),
+            ctx.accounts.mint_authority.to_account_info(),
             ctx.accounts.rent.to_account_info(),
         ],
     )?;
+
+    msg!("Metadata and master edition created");
 
     Ok(())
 }
