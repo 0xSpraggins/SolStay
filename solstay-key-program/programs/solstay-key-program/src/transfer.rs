@@ -48,7 +48,7 @@ pub fn transfer(ctx: Context<TransferNFT>, price: u64) -> Result<()> {
 #[derive(Accounts)]
 pub struct TransferNFT<'info> {
     #[account(mut)]
-    pub mint: Signer<'info>,
+    pub mint: Account<'info, token::Mint>,
     #[account(mut)]
     pub owner_token_account: Account<'info, token::TokenAccount>,
     #[account(mut)]
