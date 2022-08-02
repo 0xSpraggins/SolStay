@@ -17,6 +17,11 @@ export default function useCachedResources() {
           ...FontAwesome.font,
           'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
         });
+
+        await Font.loadAsync({
+          ...FontAwesome.font,
+          'suez-one': require('../assets/fonts/SuezOne-Regular.ttf'),
+        });
       } catch (e) {
         // We might want to provide this error information to an error reporting service
         console.warn(e);
