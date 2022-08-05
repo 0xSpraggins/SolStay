@@ -8,7 +8,7 @@ const MainLogo = require('../assets/images/SolStayLogo.png');
 
 const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;
-    const [recoveryPhrase, setRecoverPhrase] = useState();
+    const [recoveryPhrase, setRecoverPhrase] = useState('');
     return (
         <View style={styles.startupContainer}>
             <Image 
