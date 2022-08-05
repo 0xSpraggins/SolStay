@@ -1,25 +1,32 @@
+import React, { useEffect } from "react";
 import { Pressable, Image, StyleSheet, Text, View } from "react-native";
+import { IStackScreenProps } from "../navigation/StackScreenProps";
 const MainLogo = require('../assets/images/SolStayLogo.png');
 
-const createNewAccount_Click = () => {
 
-}
+const StartupScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
 
-const importAccount_Click = () => {
+    const {navigation, route, nameProp} = props;
+    useEffect(() => {
+        console.log({navigation, route, nameProp})
+    });
     
-}
-
-const StartupScreen = () => {
     return (
         <View style={styles.startupContainer}>
             <Image 
                 source={MainLogo}
                 style={styles.logo}
             />
-            <Pressable style={[styles.startupBtns, styles.newAccountBtn]} onPress={createNewAccount_Click} >
+            <Pressable style={[styles.startupBtns, styles.newAccountBtn]} 
+                onPress={() =>
+                    navigation.navigate('CreateAccount')
+                } >
                 <Text style={[styles.startupText, styles.newAccountBtnText]}>Create New Account</Text>
             </Pressable>
-            <Pressable style={[styles.startupBtns, styles.importAccountBtn]} onPress={importAccount_Click} >
+            <Pressable style={[styles.startupBtns, styles.importAccountBtn]} 
+                onPress={() =>
+                    navigation.navigate('ImportAccount')
+                } >
                 <Text style={[styles.startupText, styles.importAccountBtnText]}>Import Account</Text>
             </Pressable>
             
@@ -44,6 +51,7 @@ const styles = StyleSheet.create({
         height: 72,
         borderRadius: 10,
         margin: 10,
+        elevation: 3,
     },
     startupText: {
         fontSize: 24,
