@@ -1,12 +1,12 @@
 import { BottomTabBarHeightCallbackContext } from "@react-navigation/bottom-tabs";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Pressable, Image, StyleSheet, Text, View, TextInput } from "react-native";
 import { IStackScreenProps } from "../navigation/StackScreenProps";
 const MainLogo = require('../assets/images/SolStayLogo.png');
 
-
-
 const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
+
+
     const {navigation, route, nameProp} = props;
     const [recoveryPhrase, setRecoverPhrase] = useState('');
     return (
@@ -15,6 +15,7 @@ const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
                 source={MainLogo}
                 style={styles.logo}
             />
+            {/* Add form validation to make sure the user enters 12 words */}
             <TextInput
                 multiline={true}
                 numberOfLines={6}
@@ -23,7 +24,7 @@ const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
                 style={styles.recoveryPhraseInput}
             />
             <Text style={[styles.importText, styles.importDescription]}>Enter your key phrase with a space between each word</Text>
-            <Pressable style={[styles.importBtns, styles.signInBtn]}  >
+            <Pressable style={[styles.importBtns, styles.signInBtn]}>
                 <Text style={[styles.importText, styles.signInBtnText]}>Sign In</Text>
             </Pressable>
             <Pressable style={[styles.importBtns, styles.backBtnBtn]} 

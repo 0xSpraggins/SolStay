@@ -26,22 +26,24 @@ const CreateAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
             device</Text>
             <Pressable
                 onPress={() =>
-                    navigation.navigate('Startup')}>
-                        <FontAwesomeIcon 
-                            size={60}
-                            color={'black'}
-                            icon={faArrowLeft as IconProp}
-                            style={styles.arrowBack} />
-                    </Pressable>
+                    navigation.navigate('Startup')}
+            >
+                <FontAwesomeIcon 
+                    size={60}
+                    color={'black'}
+                    icon={faArrowLeft as IconProp}
+                    style={styles.arrowBack} />
+            </Pressable>
             <Pressable
                 onPress={() =>
-                    navigation.navigate('RecoveryPhraseScreen')}>
-                        <FontAwesomeIcon 
-                            size={60}
-                            color={'#4183D7'}
-                            icon={faArrowRight as IconProp}
-                            style={styles.arrowContinue} />
-                    </Pressable>
+                    navigation.navigate('RecoveryPhrase')}
+            >
+                <FontAwesomeIcon 
+                    size={60}
+                    color={'#4183D7'}
+                    icon={faArrowRight as IconProp}
+                    style={styles.arrowContinue} />
+            </Pressable>
         </View>
     );
 }
