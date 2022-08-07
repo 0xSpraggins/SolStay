@@ -4,6 +4,7 @@ import { IStackScreenProps } from "../navigation/StackScreenProps";
 import MainNavBar from "../components/MainNavBar";
 import { NavigationContainer } from "@react-navigation/native";
 import SearchBar from "../components/SearchBar";
+import AvailableProperties from "../components/AvailableProperties";
 
 const HomeScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
 
@@ -15,7 +16,7 @@ const HomeScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
         <SearchBar />
       </View>
       <ScrollView style={styles.MainView}>
-
+        <AvailableProperties />
       </ScrollView>
       {/* <View style={styles.NavBar}>
         <MainNavBar />
@@ -34,7 +35,6 @@ const styles =  StyleSheet.create({
   },
   MainView: {
     flex: .75,
-    backgroundColor: 'orange',
   },
   NavBar: {
     

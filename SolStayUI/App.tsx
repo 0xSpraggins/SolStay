@@ -17,7 +17,7 @@ export default function App() {
   const colorScheme = useColorScheme();
 
   const UserContext = React.createContext('');
-  const [user, setUser] = useState('dsfgdsfgdsfg54')
+  const [user, setUser] = useState('safudhio7348903w')
 
   if (!isLoadingComplete) {
     return null;
