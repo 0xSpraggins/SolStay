@@ -206,5 +206,33 @@
             ]
             
         }
-    ]
+    ],
+    "CurrentUser": {
+        "ActiveReservations": [
+            {
+                "id": "ciuj3epbu9j3dwed",
+                "address": "1111 Test St.",
+                "date": "8/15/22",
+                "keyAccount": ""
+            },
+            {
+                "id": "sdfoijm3i2k3s3",
+                "address": "1111 Test St.",
+                "date": "9/10/22",
+                "keyAccount": ""
+            },
+            {
+                "id": "wdokzoxmeo9342",
+                "address": "1111 Test St.",
+                "date": "10/30/22",
+                "keyAccount": ""
+            },
+            {
+                "id": "dnjdbhcux3823",
+                "address": "1111 Test St.",
+                "date": "12/15/22",
+                "keyAccount": ""
+            }
+        ]
+    }
 }

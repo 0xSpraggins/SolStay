@@ -22,6 +22,10 @@ export default function useCachedResources() {
           ...FontAwesome.font,
           'suez-one': require('../assets/fonts/SuezOne-Regular.ttf'),
         });
+
+        await Font.loadAsync({
+          'noto-sans-semiBold': require('../assets/fonts/NotoSans-SemiBold.ttf'),
+        });
       } catch (e) {
         // We might want to provide this error information to an error reporting service
         console.warn(e);
