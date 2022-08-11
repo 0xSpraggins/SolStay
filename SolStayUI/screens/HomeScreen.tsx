@@ -5,9 +5,10 @@ import MainNavBar from "../components/MainNavBar";
 import { NavigationContainer } from "@react-navigation/native";
 import SearchBar from "../components/SearchBar";
 import AvailableProperties from "../components/AvailableProperties";
+import * as solStayService from '../Services/SolStayService';
+import { useSolanaWalletState } from "../Context/SolanaWallet";
 
 const HomeScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
-
   const {navigation, route, nameProp} = props;
 
   return (

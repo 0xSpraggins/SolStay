@@ -7,7 +7,7 @@ const AvailableProperties = () => {
     return (
         <View>
             {Data['AvailableReservations'].map((x) => (
-                <View style={styles.reservationCard}>
+                <View style={styles.reservationCard} key={x.id}>
                     <Image 
                         source={MockHousePicture}
                         style={styles.propertyImage}

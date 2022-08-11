@@ -4,11 +4,21 @@ import { IStackScreenProps } from "../navigation/StackScreenProps";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import * as solStayService from '../Services/SolStayService';
+import { useSolanaWalletState } from "../Context/SolanaWallet";
 const secrete_icon = require('../assets/images/secret_icon.png');
 
 const CreateAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
 
     const {navigation, route, nameProp} = props;
+    const {mnemonic, setMnemonic} = useSolanaWalletState();
+
+    const generateRecoveryPhrase = () => {
+        solStayService.generateMnemonic().then((response) => {
+            setMnemonic(response);
+            console.log(mnemonic);
+        }
+    )}
 
     return (
         <View style={styles.recoveryPhraseContainer}>
@@ -26,8 +36,8 @@ const CreateAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
             device</Text>
             <Pressable
                 onPress={() =>
-                    navigation.navigate('Startup')}
-            >
+                    navigation.navigate('Startup')
+                }>
                 <FontAwesomeIcon 
                     size={60}
                     color={'black'}
@@ -35,9 +45,10 @@ const CreateAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
                     style={styles.arrowBack} />
             </Pressable>
             <Pressable
-                onPress={() =>
-                    navigation.navigate('RecoveryPhrase')}
-            >
+                onPress={() => {
+                    generateRecoveryPhrase();
+                    navigation.navigate('RecoveryPhrase');
+                }}>
                 <FontAwesomeIcon 
                     size={60}
                     color={'#4183D7'}

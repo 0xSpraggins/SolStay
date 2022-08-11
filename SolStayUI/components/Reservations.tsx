@@ -11,7 +11,7 @@ const Reservations = () => {
             </View>
             <ScrollView style={styles.pageScroll}>
                 {Data['CurrentUser'].ActiveReservations.map((x) => (
-                    <View>
+                    <View key={x.id}>
                         <View style={styles.reservationRow}>
                             <Text style={styles.componentText}>{x.address}</Text>
                             <Text style={styles.componentText}>{x.date}</Text>

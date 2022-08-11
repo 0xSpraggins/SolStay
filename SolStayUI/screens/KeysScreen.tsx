@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import ActiveKey from "../components/ActiveKey";
 import Reservations from "../components/Reservations";
+import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { IStackScreenProps } from "../navigation/StackScreenProps";
 
 const KeysScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;
     const [showActiveKey, setShowActiveKey] = useState(false);
+    const {account, network, setBalance} = useSolanaWalletState();
 
     return (
         <View>

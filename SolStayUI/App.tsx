@@ -1,13 +1,11 @@
-import { NavigationContainer } from '@react-navigation/native';
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
-import routes from './navigation/Routes';
-import StartupScreen from './screens/StartupScreen';
 import { createStackNavigator } from '@react-navigation/stack';
-import MainNavBar from './components/MainNavBar';
-
+import Navigation from './navigation/Navigation';
+import { SolanaWalletContext } from './Context/SolanaWallet';
+import { Cluster, Keypair } from '@solana/web3.js';
 
 const Stack = createStackNavigator();
 
@@ -16,34 +14,22 @@ export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
 
-  const UserContext = React.createContext('');
-  const [user, setUser] = useState('safudhio7348903w')
+  // Initialize the starting states of the Solana Wallet Context.
+  // In future updates store in memory
+  const [network, setNetwork] = useState<Cluster>("devnet");
+  const [account, setAccount] = useState<Keypair | null>(null);
+  const [mnemonic, setMnemonic] = useState<string | null>(null);
+  const [balance, setBalance] = useState<number>(0);
 
   if (!isLoadingComplete) {
     return null;
-  } else if (user.length > 1) {
-    return (
-      <NavigationContainer>
-        <MainNavBar />
-      </NavigationContainer>
-    );
   } else {
     return (
-      // <UserContext.Provider value={[user, setUser]}>
-        <NavigationContainer>
-          <Stack.Navigator 
-            initialRouteName='StartupScreen'
-            screenOptions={{
-              headerShown: false,
-            }}>
-            {routes.map((r,i) => (
-              <Stack.Screen key={i} name={r.name}>
-                {(props) => <r.component nameProp={r.name} {...props} />}
-              </Stack.Screen>
-            ))}
-          </Stack.Navigator>
-        </NavigationContainer>
-      // </UserContext.Provider>
+      <SolanaWalletContext.Provider value={{network, setNetwork, account, setAccount, mnemonic, setMnemonic, balance, setBalance}}>
+        <SafeAreaProvider>
+          <Navigation />
+        </SafeAreaProvider>
+      </SolanaWalletContext.Provider>
     );
   }
 }

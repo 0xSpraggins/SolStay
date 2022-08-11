@@ -1,16 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Pressable, ScrollView, FlatList } from "react-native";
 import { IStackScreenProps } from "../navigation/StackScreenProps";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import * as solStayService from '../Services/SolStayService';
+import { useSolanaWalletState } from "../Context/SolanaWallet";
 
 const RecoveryPhraseScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;
+    const {network, account, setAccount, setBalance, mnemonic} = useSolanaWalletState();
 
-    const recoveryPhrase: string = 'fire thin food fleet diet waiter manager back combine management lane fade';
+    const initializeAccount_Click = async () => {
+        if (mnemonic != null) {
+            const keyPair = await solStayService.createNewWallet(mnemonic);
+            setAccount(keyPair);
+            refreshBalance();
+        } else {
+            alert("No recovery phrase generated");
+        }
+    }
 
-    let recoveryArray: string[] = recoveryPhrase.split(' ');
+    const refreshBalance = async () => {
+        const balance = await solStayService.getBalance(account, network);
+        setBalance(balance);
+    }
+
+    let recoveryArray = mnemonic?.split(' ');
 
     return (
         <View style={styles.recoveryContainer}>
@@ -42,6 +58,7 @@ const RecoveryPhraseScreen: React.FunctionComponent<IStackScreenProps> = (props)
                     style={styles.arrowBack} />
             </Pressable>
             <Pressable
+                onPress={initializeAccount_Click}
                 >
                 <FontAwesomeIcon 
                     size={60}
