@@ -1,6 +1,6 @@
 import { faBalanceScale, faRandom } from '@fortawesome/free-solid-svg-icons';
 import { getStateFromPath } from '@react-navigation/native';
-import { Keypair, Connection, clusterApiUrl, Cluster} from '@solana/web3.js';
+import { Keypair, Connection, clusterApiUrl, Cluster, LAMPORTS_PER_SOL} from '@solana/web3.js';
 import * as Bip39 from "bip39";
 import { ethers } from "ethers";
 import * as Random from "expo-random";
@@ -30,7 +30,7 @@ export async function generateMnemonic(): Promise<string> {
     return mnemonic;
 }
 
-async function accountFromMnemonic(recoveryPhrase: string) {
+export async function accountFromMnemonic(recoveryPhrase: string): Promise<Keypair> {
     //Convert the mnemonic phrase to a seed phrase
     const seed = Bip39.mnemonicToSeedSync(recoveryPhrase);
     return Keypair.fromSeed(seed.subarray(0, 32));
@@ -59,7 +59,7 @@ export async function getBalance(account: Keypair | null, network: Cluster): Pro
     if (account) {
         try {
             const connection = solanaConnect(network);
-            const balance = connection.getBalance(account.publicKey);
+            const balance = await connection.getBalance(account.publicKey);
             return balance;
         } catch (err) {
             console.log(err);
@@ -69,5 +69,18 @@ export async function getBalance(account: Keypair | null, network: Cluster): Pro
         console.log("No account is loaded");
         return 0;
     }
+}
+
+export async function airDropSol(account: Keypair, network: Cluster): Promise<boolean> {
+    const lamports = (network === 'devnet') ? 2 * LAMPORTS_PER_SOL : LAMPORTS_PER_SOL;
+
+    try {
+        const connection = solanaConnect(network);
+        await connection.requestAirdrop(account.publicKey, lamports);
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+    return true;
 }
 

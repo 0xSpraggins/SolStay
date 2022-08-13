@@ -1,14 +1,21 @@
 import { BottomTabBarHeightCallbackContext } from "@react-navigation/bottom-tabs";
 import React, { useContext, useState } from "react";
 import { Pressable, Image, StyleSheet, Text, View, TextInput } from "react-native";
+import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { IStackScreenProps } from "../navigation/StackScreenProps";
+import * as solStayService from '../Services/SolStayService';
 const MainLogo = require('../assets/images/SolStayLogo.png');
 
 const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
-
-
     const {navigation, route, nameProp} = props;
     const [recoveryPhrase, setRecoverPhrase] = useState('');
+    const {setAccount} = useSolanaWalletState();
+
+    const signIn_Click = async () => {
+        const userWallet = await solStayService.accountFromMnemonic(recoveryPhrase);
+        setAccount(userWallet);
+    }
+
     return (
         <View style={styles.startupContainer}>
             <Image 
@@ -24,7 +31,10 @@ const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
                 style={styles.recoveryPhraseInput}
             />
             <Text style={[styles.importText, styles.importDescription]}>Enter your key phrase with a space between each word</Text>
-            <Pressable style={[styles.importBtns, styles.signInBtn]}>
+            <Pressable 
+                style={[styles.importBtns, styles.signInBtn]}
+                onPress={signIn_Click}
+            >
                 <Text style={[styles.importText, styles.signInBtnText]}>Sign In</Text>
             </Pressable>
             <Pressable style={[styles.importBtns, styles.backBtnBtn]} 

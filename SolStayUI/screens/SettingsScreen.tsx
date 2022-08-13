@@ -1,17 +1,26 @@
-import React, { useContext } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import React, { useContext, useState } from "react";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import AccountTypeModal from "../components/SettingsScreenModals/AccountTypeModal";
 import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { IStackScreenProps } from "../navigation/StackScreenProps";
 import * as solStayService from '../Services/SolStayService';
 
 const SettingsScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;
-    const {account, balance, network, setAccount, setMnemonic,setBalance } = useSolanaWalletState();
+    const {account, balance, network, setNetwork, setAccount, setMnemonic,setBalance } = useSolanaWalletState();
+    const [modalType, setModalType] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
     const userPublicKey = account?.publicKey.toString();
-
+    
     const refreshBalance = async () => {
         const balance = await solStayService.getBalance(account, network);
         setBalance(balance);
+    }
+
+    const closeModal = () => {
+        setModalVisible(false);
+        refreshBalance();
     }
 
     const logout_Click = () => {
@@ -20,11 +29,12 @@ const SettingsScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
         setAccount(null);
     }
 
+    refreshBalance();
     return (
         <View style={styles.settingsContainer}>
             <Pressable style={styles.accountOverviewContainer}>
                 <Text style={styles.accountInfoText}>Account: {userPublicKey?.substring(0,10)}...</Text>
-                <Text style={styles.accountInfoText}>Balance: {balance} SOL</Text>
+                <Text style={styles.accountInfoText}>Balance: {(balance / LAMPORTS_PER_SOL).toPrecision(4)} SOL</Text>
                 <View style={styles.accountBtnContainer}>
                     <Pressable style={styles.accountInfoBtn}>
                         <Text style={[styles.btnText, styles.accountBtnText]}>Deposit</Text>
@@ -37,7 +47,12 @@ const SettingsScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
             <Pressable style={styles.settingsBtn}>
                 <Text style={styles.btnText}>Export Key Phrase</Text>
             </Pressable>
-            <Pressable style={styles.settingsBtn}>
+            <Pressable style={styles.settingsBtn}
+                onPress={() => {
+                    setModalType('accountType')
+                    setModalVisible(true);
+                }}
+            >
                 <Text style={styles.btnText}>Select Account Type</Text>
             </Pressable>
             <Pressable style={styles.settingsBtn}>
@@ -55,6 +70,26 @@ const SettingsScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
             >
                 <Text style={styles.btnText}>Log out</Text>
             </Pressable>
+            <View style={styles.modalCenteredView}>
+                <Modal
+                    animationType="none"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        setModalVisible(!modalVisible);
+                    }}
+                >
+                    <View style={styles.modalCenteredView}>
+                        <View style={styles.modalView}>
+                            {
+                                {
+                                    'accountType': <AccountTypeModal onClose={closeModal} />
+                                }[modalType]
+                            }
+                        </View>
+                    </View>
+                </Modal>
+            </View>
         </View>
     )
 }
@@ -113,7 +148,20 @@ const styles = StyleSheet.create({
         fontSize: 20,
         alignSelf: 'center',
         marginTop: 2,
-    }
+    },
+    modalCenteredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalView: {
+        backgroundColor: "#ffffff",
+        height: 400,
+        width: 300,
+        borderBottomColor: "000000",
+        borderRadius: 10,
+        borderWidth: 4,
+    },
 })
 
 export default SettingsScreen;

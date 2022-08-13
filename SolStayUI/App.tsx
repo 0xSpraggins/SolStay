@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Navigation from './navigation/Navigation';
 import { SolanaWalletContext } from './Context/SolanaWallet';
 import { Cluster, Keypair } from '@solana/web3.js';
+import 'react-native-get-random-values';
 
 const Stack = createStackNavigator();
 
