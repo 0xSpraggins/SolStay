@@ -6,7 +6,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import * as solStayService from '../Services/SolStayService';
 import { useSolanaWalletState } from "../Context/SolanaWallet";
-
+import * as encryptedStorage from '../Services/EncryptedStorageService';
 const RecoveryPhraseScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;
     const {network, account, setAccount, setBalance, mnemonic} = useSolanaWalletState();
@@ -14,8 +14,10 @@ const RecoveryPhraseScreen: React.FunctionComponent<IStackScreenProps> = (props)
     const initializeAccount_Click = async () => {
         if (mnemonic != null) {
             const keyPair = await solStayService.createNewWallet(mnemonic);
-            setAccount(keyPair);
-            refreshBalance();
+            if (await encryptedStorage.saveWallet(mnemonic)) {
+                setAccount(keyPair);
+                refreshBalance();
+            }
         } else {
             alert("No recovery phrase generated");
         }

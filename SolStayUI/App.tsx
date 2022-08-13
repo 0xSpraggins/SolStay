@@ -21,7 +21,7 @@ export default function App() {
   const [account, setAccount] = useState<Keypair | null>(null);
   const [mnemonic, setMnemonic] = useState<string | null>(null);
   const [balance, setBalance] = useState<number>(0);
-
+  
   if (!isLoadingComplete) {
     return null;
   } else {

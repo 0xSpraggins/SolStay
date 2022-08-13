@@ -5,6 +5,7 @@ import AccountTypeModal from "../components/SettingsScreenModals/AccountTypeModa
 import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { IStackScreenProps } from "../navigation/StackScreenProps";
 import * as solStayService from '../Services/SolStayService';
+import * as encryptedStorage from '../Services/EncryptedStorageService';
 
 const SettingsScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;
@@ -23,10 +24,13 @@ const SettingsScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
         refreshBalance();
     }
 
-    const logout_Click = () => {
-        setMnemonic(null);
-        setBalance(0);
-        setAccount(null);
+    const logout_Click = async () => {
+        
+        if (await encryptedStorage.clearStorage()) {
+            setMnemonic(null);
+            setBalance(0);
+            setAccount(null);
+        }
     }
 
     refreshBalance();

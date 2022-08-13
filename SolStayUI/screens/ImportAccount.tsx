@@ -5,6 +5,7 @@ import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { IStackScreenProps } from "../navigation/StackScreenProps";
 import * as solStayService from '../Services/SolStayService';
 const MainLogo = require('../assets/images/SolStayLogo.png');
+import * as encryptedStorage from '../Services/EncryptedStorageService';
 
 const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;
@@ -13,7 +14,11 @@ const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
 
     const signIn_Click = async () => {
         const userWallet = await solStayService.accountFromMnemonic(recoveryPhrase);
-        setAccount(userWallet);
+        if (recoveryPhrase) {
+            if (await encryptedStorage.saveWallet(recoveryPhrase)) {
+                setAccount(userWallet);
+            }
+        }
     }
 
     return (

@@ -1,16 +1,24 @@
 import React, { useEffect } from "react";
 import { Pressable, Image, StyleSheet, Text, View } from "react-native";
+import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { IStackScreenProps } from "../navigation/StackScreenProps";
+import * as encryptedStorage from '../Services/EncryptedStorageService';
 const MainLogo = require('../assets/images/SolStayLogo.png');
 
 
 const StartupScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
 
     const {navigation, route, nameProp} = props;
-    useEffect(() => {
-        console.log({navigation, route, nameProp})
-    });
+    const {setAccount} = useSolanaWalletState();
+
+    async function getCurrentWallet() {
+        let wallet = await encryptedStorage.currentWallet();
+        if (wallet) {
+          setAccount(wallet);
+        }
+      }
     
+    getCurrentWallet();
     return (
         <View style={styles.startupContainer}>
             <Image 
