@@ -16,7 +16,6 @@ export const saveWallet = async (recoveryPhrase: string): Promise<boolean> => {
 export const currentWallet = async (): Promise<Keypair | null> => {
     try {
         const mnemonic = await SecureStore.getItemAsync("user_wallet");
-        console.log(mnemonic);
         if (mnemonic != null) {
             return await solStayService.accountFromMnemonic(mnemonic);
         } else {
