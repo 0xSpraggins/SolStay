@@ -6,6 +6,7 @@ import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { IStackScreenProps } from "../navigation/StackScreenProps";
 import * as solStayService from '../Services/SolStayService';
 import * as encryptedStorage from '../Services/EncryptedStorageService';
+import ManagePropertiesModal from "../components/SettingsScreenModals/ManagePropertiesModal";
 
 const SettingsScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;
@@ -53,13 +54,19 @@ const SettingsScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
             </Pressable>
             <Pressable style={styles.settingsBtn}
                 onPress={() => {
-                    setModalType('accountType')
+                    setModalType('accountType');
                     setModalVisible(true);
                 }}
             >
                 <Text style={styles.btnText}>Select Account Type</Text>
             </Pressable>
-            <Pressable style={styles.settingsBtn}>
+            <Pressable 
+                style={styles.settingsBtn}
+                onPress={() => {
+                    setModalType('manageProperties');
+                    setModalVisible(true);
+                }}
+            >
                 <Text style={styles.btnText}>Manage Properties</Text>
             </Pressable>
             <Pressable style={styles.settingsBtn}>
@@ -84,10 +91,11 @@ const SettingsScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
                     }}
                 >
                     <View style={styles.modalCenteredView}>
-                        <View style={styles.modalView}>
+                        <View style={[styles.modalView, (modalType === 'manageProperties')? styles.fullScreenModal : null]}>
                             {
                                 {
-                                    'accountType': <AccountTypeModal onClose={closeModal} />
+                                    'accountType': <AccountTypeModal onClose={closeModal} />,
+                                    'manageProperties': <ManagePropertiesModal  onClose={closeModal}/>
                                 }[modalType]
                             }
                         </View>
@@ -166,6 +174,12 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 4,
     },
+    fullScreenModal: {
+        height: 675,
+        width: 350,
+        position: "absolute",
+        top: 50,
+    }
 })
 
 export default SettingsScreen;

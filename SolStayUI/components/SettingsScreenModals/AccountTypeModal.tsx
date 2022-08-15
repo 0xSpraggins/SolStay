@@ -8,18 +8,28 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import * as solStayService from '../../Services/SolStayService';
 import { IModalProps } from "../../Interfaces/IModalProps";
 import Dropdown from "../Dropdown";
+import axios from "axios";
 
 
 const AccountTypeModal: React.FC<IModalProps> = ( props: IModalProps) => {
-    const {network, account, setNetwork} = useSolanaWalletState();
+    const {network, account, isOwner, setIsOwner, setNetwork} = useSolanaWalletState();
     const [selectedNetork, setSelectedNetwork] = useState(network);
-    const [isOwner, setIsOwner] = useState<boolean>(false);
     
     const availableNetworks = ['devnet', 'testnet', 'mainnet-beta'].filter(x => x != selectedNetork);
     
     const onSelect = (item: ("devnet" | "testnet" | "mainnet-beta")) => {
         setSelectedNetwork(item)
     } 
+
+    const changeAccountType = () => {
+        axios.put('http://localhost:3003/updateUser', {
+                pubkey: account?.publicKey,
+                isOwner: (isOwner) ? 1 : 0})
+        .then((response) => console.log(response))
+        .catch((err) => {
+            console.log(err);
+        });
+    }
 
     const changeNetwork = () => {
         try {
@@ -95,7 +105,10 @@ const AccountTypeModal: React.FC<IModalProps> = ( props: IModalProps) => {
                     <Pressable 
                         style={[styles.btnAlignment, styles.exitConfirmBtn, styles.confirmBtn]}
                         onPress={() => {
+                            // Add error handling and make this its own function
+                            setIsOwner(isOwner);
                             changeNetwork();
+                            changeAccountType();
                             props.onClose();
                         }}
                     >

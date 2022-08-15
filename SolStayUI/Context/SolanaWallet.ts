@@ -11,6 +11,8 @@ export type WalletContextType = {
     setMnemonic: React.Dispatch<React.SetStateAction<string | null>>;
     balance: number;
     setBalance: React.Dispatch<React.SetStateAction<number>>;
+    isOwner: boolean;
+    setIsOwner: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const SolanaWalletContext = createContext<WalletContextType>({
@@ -22,6 +24,8 @@ export const SolanaWalletContext = createContext<WalletContextType>({
     setMnemonic: () => null,
     balance: 0,
     setBalance: () => 0,
+    isOwner: false,
+    setIsOwner: () => 0,
   });
   
   export const useSolanaWalletState = () => useContext(SolanaWalletContext);

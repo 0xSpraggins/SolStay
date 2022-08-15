@@ -6,19 +6,45 @@ import { IStackScreenProps } from "../navigation/StackScreenProps";
 import * as solStayService from '../Services/SolStayService';
 const MainLogo = require('../assets/images/SolStayLogo.png');
 import * as encryptedStorage from '../Services/EncryptedStorageService';
+import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
 const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;
     const [recoveryPhrase, setRecoverPhrase] = useState('');
-    const {setAccount} = useSolanaWalletState();
+    const {setAccount, setIsOwner, isOwner} = useSolanaWalletState();
 
     const signIn_Click = async () => {
         const userWallet = await solStayService.accountFromMnemonic(recoveryPhrase);
         if (recoveryPhrase) {
             if (await encryptedStorage.saveWallet(recoveryPhrase)) {
+                await getUser(userWallet.publicKey.toString());
+                console.log(isOwner);
                 setAccount(userWallet);
             }
         }
+    }
+
+    const addUser = (pubKey: string) => {
+        axios.post('http://localhost:3003/user', 
+        {pubkey: pubKey, isOwner: false})
+        .then(() => console.log("success")); 
+    }
+
+    const getUser = (publicKey: string) => {
+
+        axios.get('http://localhost:3003/getUser', {
+            params: {
+                pubkey: publicKey
+            }
+        }).then((response) => {
+            if (response.data.length > 0) {
+                const ownerData = (response.data.IsOwner) ? true : false
+                setIsOwner(ownerData);
+            } else {
+                addUser(publicKey);
+            }
+        });
     }
 
     return (
@@ -46,7 +72,6 @@ const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
                 onPress={() => {navigation.navigate('Startup')}}>
                 <Text style={[styles.importText, styles.backBtnText]}>Back</Text>
             </Pressable>
-            
         </View>
     );
 }

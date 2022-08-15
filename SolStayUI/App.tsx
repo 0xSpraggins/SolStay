@@ -21,12 +21,13 @@ export default function App() {
   const [account, setAccount] = useState<Keypair | null>(null);
   const [mnemonic, setMnemonic] = useState<string | null>(null);
   const [balance, setBalance] = useState<number>(0);
+  const [isOwner, setIsOwner] = useState<boolean>(false);
   
   if (!isLoadingComplete) {
     return null;
   } else {
     return (
-      <SolanaWalletContext.Provider value={{network, setNetwork, account, setAccount, mnemonic, setMnemonic, balance, setBalance}}>
+      <SolanaWalletContext.Provider value={{network, setNetwork, account, setAccount, mnemonic, setMnemonic, balance, setBalance, isOwner, setIsOwner}}>
         <SafeAreaProvider>
           <Navigation />
         </SafeAreaProvider>

@@ -1,5 +1,6 @@
 
 
 export interface IModalProps {
-    onClose: () => void
+    onClose: () => void,
+    input?: any
 }

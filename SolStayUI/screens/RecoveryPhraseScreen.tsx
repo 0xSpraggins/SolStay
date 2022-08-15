@@ -7,6 +7,7 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import * as solStayService from '../Services/SolStayService';
 import { useSolanaWalletState } from "../Context/SolanaWallet";
 import * as encryptedStorage from '../Services/EncryptedStorageService';
+import axios from "axios";
 const RecoveryPhraseScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;
     const {network, account, setAccount, setBalance, mnemonic} = useSolanaWalletState();
@@ -15,12 +16,19 @@ const RecoveryPhraseScreen: React.FunctionComponent<IStackScreenProps> = (props)
         if (mnemonic != null) {
             const keyPair = await solStayService.createNewWallet(mnemonic);
             if (await encryptedStorage.saveWallet(mnemonic)) {
+                await addUser(keyPair.publicKey.toString());
                 setAccount(keyPair);
                 refreshBalance();
             }
         } else {
             alert("No recovery phrase generated");
         }
+    }
+
+    const addUser = (pubKey: string) => {
+        axios.post('http://localhost:3003/user', 
+        {pubkey: pubKey, isOwner: false})
+        .then(() => console.log("success")); 
     }
 
     const refreshBalance = async () => {

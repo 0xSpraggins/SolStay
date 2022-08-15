@@ -1,27 +1,49 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSolanaWalletState } from "../Context/SolanaWallet";
 import Data from '../MockData/MockData.json';
 
 const Reservations = () => {
-    return(
-        <View style={styles.reservationContainer}>
-            <View style={styles.reservationHeader}>
-                <Text style={styles.headerText}>Address</Text>
-                <Text style={styles.headerText}>Date</Text>
-            </View>
-            <ScrollView style={styles.pageScroll}>
-                {Data['CurrentUser'].ActiveReservations.map((x) => (
-                    <View key={x.id}>
-                        <View style={styles.reservationRow}>
-                            <Text style={styles.componentText}>{x.address}</Text>
-                            <Text style={styles.componentText}>{x.date}</Text>
+    const {account} = useSolanaWalletState();
+    const [fetchedData, setFetchedData] = useState<any[]>();
+
+    useEffect(() => {
+        axios.get('http://localhost:3003/getUsersReservations', {
+            params: {
+                pubkey: account?.publicKey
+            }
+        }).then((response) => {
+            const data = (response.data);
+            setFetchedData(data);
+        })
+    },[])
+    
+    if (!fetchedData) {
+        return (
+            <Text>Loading...</Text>
+        )
+    } else {
+        return(
+            <View style={styles.reservationContainer}>
+                <View style={styles.reservationHeader}>
+                    <Text style={styles.headerText}>Address</Text>
+                    <Text style={styles.headerText}>Date</Text>
+                </View>
+                <ScrollView style={styles.pageScroll}>
+                    {fetchedData.map((x) => (
+                        <View key={x.id}>
+                            <View style={styles.reservationRow}>
+                                <Text style={styles.componentText}>{x.PropertyId}</Text>
+                                <Text style={styles.componentText}>{x.CheckIn}</Text>
+                            </View>
+                            <View style={styles.reservationSeperator}></View>
                         </View>
-                        <View style={styles.reservationSeperator}></View>
-                    </View>
-                ))}
-            </ScrollView>
-        </View>
-    );
+                    ))}
+                </ScrollView>
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({

@@ -1,42 +1,92 @@
-import React from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import Data from '../MockData/MockData.json';
+import ReservationModal from "./ReservationModal";
 const MockHousePicture = require('../assets/images/mock_house_picture.png');
 
 const AvailableProperties = () => {
-    return (
-        <View>
-            {Data['AvailableReservations'].map((x) => (
-                <View style={styles.reservationCard} key={x.id}>
-                    <Image 
-                        source={MockHousePicture}
-                        style={styles.propertyImage}
-                    />
-                    <View style={styles.propertyDetails}>
-                        <View style={styles.mainDetailText}>
-                            <View style={styles.addressContainer}>
-                                <Text style={[styles.addressText, styles.pageText]}>{x.address.street1} {x.address.street2}</Text>
-                                <Text style={[styles.addressText, styles.pageText]}>{x.address.city}, {x.address.state}, {x.address.zipcode}</Text>
+    const [availableProperties, setAvailableProperties] = useState<any[]>();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalIdValue, setModalIdValue] = useState<number>();
+
+    useEffect(() => {
+        axios.get('http://localhost:3003/getAllProperties').then((response) => {
+            const data = (response.data);
+            setAvailableProperties(data);
+        })
+    })
+
+    const reserveBtn_Click = (propertyId: number) => {
+        setModalIdValue(propertyId);
+        setModalVisible(!modalVisible);
+    }
+
+    if (!availableProperties) {
+        return (
+            <Text>Loading...</Text>
+        )
+    } else {
+        return (
+            <View>
+                {availableProperties.map((x) => (
+                    <View style={styles.reservationCard} key={x.Id}>
+                        <Image 
+                            source={{uri: x.ImageOne}}
+                            style={styles.propertyImage}
+                        />
+                        <View style={styles.propertyDetails}>
+                            <View style={styles.mainDetailText}>
+                                <View style={styles.addressContainer}>
+                                    <Text style={[styles.addressText, styles.pageText]}>{x.AddressOne}</Text>
+                                    {(x.AddressTwo.length > 1) ? <Text style={[styles.addressText, styles.pageText]}>{x.AddressTwo}</Text> : null}
+                                    <Text style={[styles.addressText, styles.pageText]}>{x.City}, {x.Region}, {x.PostalCode}</Text>
+                                </View>
+                                {/* <Text style={[styles.pageText]}>Owner: {x.OwnerId.substring(0,12)}...</Text> */}
+                                <View style={styles.priceContainer}>
+                                    {/* Hardcoded price value for now */}
+                                    <Text style={[styles.pageText, styles.priceText]}>5 Sol</Text>
+                                    <Text style={[styles.pageText, styles.perNightText]}>/per night</Text>
+                                </View>
                             </View>
-                            <Text style={[styles.pageText]}>Owner: {x.owner}</Text>
-                            <View style={styles.priceContainer}>
-                                <Text style={[styles.pageText, styles.priceText]}>{x.nightlyPrice} Sol</Text>
-                                <Text style={[styles.pageText, styles.perNightText]}>/per night</Text>
+                            <View style={styles.cardButtonContainer}>
+                                <Pressable style={styles.cardButton}>
+                                    <Text style={[styles.buttonText, styles.pageText]}>Contact Owner</Text>
+                                </Pressable>
+                                <Pressable 
+                                    style={styles.cardButton}
+                                    onPress={() => reserveBtn_Click(x.Id)}
+                                >
+                                    <Text style={[styles.buttonText, styles.pageText]}>Reserve</Text>
+                                </Pressable>
                             </View>
-                        </View>
-                        <View style={styles.cardButtonContainer}>
-                            <Pressable style={styles.cardButton}>
-                                <Text style={[styles.buttonText, styles.pageText]}>Contact Owner</Text>
-                            </Pressable>
-                            <Pressable style={styles.cardButton}>
-                                <Text style={[styles.buttonText, styles.pageText]}>Reserve</Text>
-                            </Pressable>
                         </View>
                     </View>
+                ))}
+                <View style={styles.modalCenteredView}>
+                    <Modal
+                        animationType="none"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                            setModalVisible(!modalVisible);
+                        }}
+                    >
+                        <View style={styles.modalCenteredView}>
+                            <View style={styles.modalView}>
+                                <ReservationModal 
+                                    input={modalIdValue} 
+                                    onClose={() => {
+                                        setModalVisible(!modalVisible);
+                                        setModalIdValue(undefined)
+                                }}/>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
-            ))}
-        </View>
-    );
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
@@ -80,7 +130,7 @@ const styles = StyleSheet.create({
         marginBottom: 1,
     },
     addressText: {
-        fontSize: 20,
+        fontSize: 18,
     },
     pageText: {
         fontFamily: 'suez-one',
@@ -105,7 +155,20 @@ const styles = StyleSheet.create({
     },
     mainDetailText: {
         marginLeft: 35,
-    }
+    },
+    modalCenteredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalView: {
+        backgroundColor: "#ffffff",
+        height: 400,
+        width: 300,
+        borderBottomColor: "000000",
+        borderRadius: 10,
+        borderWidth: 4,
+    },
 })
 
 export default AvailableProperties;

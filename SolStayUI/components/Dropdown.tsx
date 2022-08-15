@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     },
     dropdownText: {
         fontFamily: 'suez-one',
-        size: 35,
+        fontSize: 16,
     },
     optionsContainer: {
         borderColor: "#000000",
