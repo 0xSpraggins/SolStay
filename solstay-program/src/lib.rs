@@ -113,7 +113,7 @@ fn process_instruction(
             *mint_authority.key,
             String::from("Sol Stay | Key"),
             String::from("STAY"),
-            String::from("https://raw.githubusercontent.com/baileyspraggins/SolStay/main/solstay-key/tests/Assets/testNftMetadata.json"),
+            String::from("https://github.com/baileyspraggins/SolStay/blob/main/solstay-program/solstaymetadata.json"),
             None,
             0,
             true,

@@ -43,7 +43,7 @@ export async function main() {
     const wallet = await createKeypairFromFile('./keypair');
     console.log(`Local account loaded successfully.`);
     
-    const programId = new PublicKey("GdLonhp8snh1nX6dvALzCCxpQh6aLH2Y1RomDPzGM3Ef");
+    const programId = new PublicKey("qp6AXASEsVhzxsY3Q3So9zD3523YBk4iJMncbTsZGEF");
 
     console.log(`Program ID: ${programId.toBase58()}`);
 
@@ -150,7 +150,10 @@ export async function main() {
         connection,
         new Transaction().add(instruction),
         [wallet, mintKeypair],
-    )
+    ).then((response) => {
+        console.log(response);
+    });
+    
 }
 
 main().then(
