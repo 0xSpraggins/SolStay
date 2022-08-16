@@ -113,7 +113,7 @@ fn process_instruction(
             *mint_authority.key,
             String::from("Sol Stay | Key"),
             String::from("STAY"),
-            String::from("https://raw.githubusercontent.com/baileyspraggins/SolStay/main/solstay-key-program/tests/Assets/testNftMetadata.json"),
+            String::from("https://raw.githubusercontent.com/baileyspraggins/SolStay/main/solstay-key/tests/Assets/testNftMetadata.json"),
             None,
             0,
             true,
@@ -154,6 +154,8 @@ fn process_instruction(
     );
 
     msg!("Metadata and master edition created");
+
+    //msg!("Transfer NFT to the user and pay the owner of the house")
 
     Ok(())
 }

@@ -1,0 +1,10 @@
+{
+    "name": "SolStay - Key",
+    "symbol": "STAY",
+    "description": "A test for the SolStay Key Program",
+    "seller_fee_basis_points": 0,
+    "external_url": "",
+    "edition": "",
+    "background_color": "000000",
+    "image": "../assets/nft_key_image.png"
+}

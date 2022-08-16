@@ -31,30 +31,23 @@ const CONFIG_FILE_PATH = path.resolve(
     'config.yml',
 );
 
+const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
+    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+  );
 
 export async function main() {
 
     const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
     console.log(`Successfully connected to Solana dev net.`);
 
-    const configYml = await fs.readFile(CONFIG_FILE_PATH, {encoding: 'utf8'});
-    const keypairPath = await yaml.parse(configYml).keypair_path;
-    const wallet = await createKeypairFromFile(keypairPath);
+    const wallet = await createKeypairFromFile('./keypair');
     console.log(`Local account loaded successfully.`);
-
-    // const programKeypair = await createKeypairFromFile(
-    //     path.join(
-    //         path.resolve(__dirname, './dist/program'), 
-    //         'mint-keypair.json'
-    // ));
-    // const programId = programKeypair.publicKey;
     
     const programId = new PublicKey("GdLonhp8snh1nX6dvALzCCxpQh6aLH2Y1RomDPzGM3Ef");
 
     console.log(`Program ID: ${programId.toBase58()}`);
 
     // Derive the mint address and the associated token account address
-
     const mintKeypair: Keypair = Keypair.generate();
     const tokenAddress = await getAssociatedTokenAddress(
       mintKeypair.publicKey,
@@ -62,6 +55,29 @@ export async function main() {
     );
     console.log(`New token: ${mintKeypair.publicKey}`);
 
+    // create metadata address
+    const metadataAddress = (await PublicKey.findProgramAddress(
+        [
+          Buffer.from("metadata"),
+          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+          mintKeypair.publicKey.toBuffer(),
+        ],
+        TOKEN_METADATA_PROGRAM_ID
+      ))[0];
+
+      console.log("Metadata created!");
+  
+      const masterEditionAddress = (await PublicKey.findProgramAddress(
+        [
+          Buffer.from("metadata"),
+          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+          mintKeypair.publicKey.toBuffer(),
+          Buffer.from("edition"),
+        ],
+        TOKEN_METADATA_PROGRAM_ID
+      ))[0];
+
+      console.log("Master Edition Created");
     // Transact with our program
     // Update this code in order to mint an NFT with metadata
     const instruction = new TransactionInstruction({
@@ -108,6 +124,24 @@ export async function main() {
                 isSigner: false,
                 isWritable: false,
             },
+            // Metdata account
+            {
+                pubkey: metadataAddress,
+                isSigner: false,
+                isWritable: true,
+            },
+            // Master edition metadata account
+            {
+                pubkey: masterEditionAddress,
+                isSigner: false,
+                isWritable: true,
+            },
+            // Metaplex Token metadata account
+            {
+                pubkey: TOKEN_METADATA_PROGRAM_ID,
+                isSigner: false,
+                isWritable: false
+            }
         ],
         programId: programId,
         data: Buffer.alloc(0),
