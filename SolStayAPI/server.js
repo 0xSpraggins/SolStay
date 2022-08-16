@@ -149,6 +149,28 @@ app.get('/getPropertyDetails', (req, res) => {
     )
 });
 
+app.post('/saveReservation', (req, res) => {
+    const RenterId = req.body.renterId;
+    const PropertyId = req.body.propertyId;
+    const CheckIn = req.body.checkIn
+    const CheckOut = req.body.checkOut;
+    const TransactionAddress = req.body.transactionAddress;
+    const PaymentConfirmed = req.body.paymentConfirmed
+
+    connection.query(
+        `INSERT INTO Reservations (RenterId, PropertyId, CheckIn, CheckOut, TransactionAddress, PaymentConfirmed')
+        VALUES (?,?,?,?,?,?)`,
+        [RenterId, PropertyId, CheckIn, CheckOut, TransactionAddress, PaymentConfirmed],
+        (err, result) => {
+            if (err) {
+                console.log(err)
+            } else {
+                res.send(result);
+            }
+        }
+    )
+})
+
 app.listen(3003, () => {
     console.log("Server is listening on 3003...");
 })

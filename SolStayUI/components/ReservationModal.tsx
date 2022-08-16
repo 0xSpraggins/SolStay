@@ -3,6 +3,13 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Image, Pressable } from "react-native";
 import { IModalProps } from "../Interfaces/IModalProps";
 import DatePicker from 'react-native-date-picker';
+import * as solStayService from '../Services/SolStayService';
+import { useSolanaWalletState } from "../Context/SolanaWallet";
+import * as anchor from "../Anchor/dist/browser/index";
+//import * as anchor from '@project-serum/anchor';
+import { fetchData } from "@project-serum/anchor/dist/cjs/utils/registry";
+const assert = require("assert");
+const SOLSTAYWALLET = new anchor.web3.PublicKey("73x2NKEnXPo4qMupw75VgLLBTxDHKutJVG7ndPxP3qK");
 
 const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
     const [fetchedData, setFetchedData] = useState<any[]>();
@@ -11,8 +18,8 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
     const [checkOutOpen, setCheckOutOpen] = useState<boolean>(false);
     const [checkOutDate, setCheckOutDate] = useState(new Date());
     const [numberOfNights, setNumberOfNights] = useState<number>(0);
-
-    useEffect(() => {toggleNights();},[checkInDate, checkOutDate]);
+    const [paymentConfirmed, setPaymentConfirmed] = useState<boolean>(false);
+    const {account, network} = useSolanaWalletState();
     
     useEffect(() => {
         axios.get('http://localhost:3003/getPropertyDetails', {
@@ -24,16 +31,54 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
         })
     },[])
 
+    const saveReservation = () => {
+        if (fetchedData) {
+            axios.post('http://localhost:3003/saveReservation', {
+                renterId: account?.publicKey,
+                propertyId: fetchedData[0].Id,
+                checkIn: checkInDate,
+                checkOut: checkOutDate, 
+                transactionAddress: "null",
+                paymentConfirmed: paymentConfirmed
+            }).then((response) => console.log(response));
+        }
+    }
+    const confirmRental = async () => {
+        if (account && fetchedData) {
+        // Pay a .01 Sol transaction fee to the SolStayWallet
+            if (!solStayService.transferSol(account, SOLSTAYWALLET, 0.01, network)) {
+                alert("Transaction failed")
+                return false;
+            } else {
+                const ownerPubKey = new anchor.web3.PublicKey(fetchedData[0].OwnerId); 
+
+                if (!solStayService.transferSol(account, ownerPubKey, numberOfNights * 1, network)) {
+                    alert("Transaction failed");
+                } else {
+                    setPaymentConfirmed(true);
+                    let mintstatus;
+                    
+                    solStayService.mintNFT(network, account).then((response) => {mintstatus = response});
+
+                    if (mintstatus) {
+                        alert("Transaction Confirmed");
+                    }
+                }
+            }
+        }
+    }   
+
     const toggleNights = () => {
         const ms_per_day = 1000 * 60 * 60 * 24;
         const utc1 = Date.UTC(checkInDate.getFullYear(), checkInDate.getMonth(), checkInDate.getDate());
         const utc2 = Date.UTC(checkOutDate.getFullYear(), checkOutDate.getMonth(), checkOutDate.getDate());
-        console.log(utc1);
-        console.log(utc2);
+
         const nights =  Math.floor(((utc2 - utc1) / ms_per_day))
-        console.log(nights);
+
         setNumberOfNights(nights);
     }
+
+    useEffect(() => {toggleNights()},[checkInDate, checkOutDate]);
 
     if (!fetchedData) {
         return (
@@ -81,10 +126,14 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
                     <Text>5 SOL x {numberOfNights} Nights = {numberOfNights * 5} SOL</Text>
                 </View>
                 <View style={styles.reservationActions}>
-                    <Pressable>
+                    <Pressable
+                        onPress={() => {props.onClose()}}
+                    >
                         <Text>Cancel</Text>
                     </Pressable>
-                    <Pressable>
+                    <Pressable
+                        onPress={confirmRental} 
+                    >
                         <Text>Confirm</Text>
                     </Pressable>
                 </View>
