@@ -90,11 +90,12 @@ app.post('/newProperty', (req, res) => {
     const Country = req.body.country;
     const PostalCode = req.body.postalCode;
     const Image = req.body.image;
+    const NightlyPrice = req.body.nightlyPrice
 
     connection.query(
-        `INSERT INTO Properties (OwnerId, AddressOne, AddressTwo, City, Region, Country, PostalCode, ImageOne)
+        `INSERT INTO Properties (OwnerId, AddressOne, AddressTwo, City, Region, Country, PostalCode, ImageOne, NightlyPrice)
         VALUES (?,?,?,?,?,?,?,?)`,
-        [Pubkey, AddressOne, AddressTwo, City, Region, Country, PostalCode, Image],
+        [Pubkey, AddressOne, AddressTwo, City, Region, Country, PostalCode, Image, NightlyPrice],
         (err, result) => {
             if (err) {
                 console.log(err);
@@ -155,12 +156,11 @@ app.post('/saveReservation', (req, res) => {
     const CheckIn = req.body.checkIn
     const CheckOut = req.body.checkOut;
     const TransactionAddress = req.body.transactionAddress;
-    const PaymentConfirmed = req.body.paymentConfirmed
 
     connection.query(
-        `INSERT INTO Reservations (RenterId, PropertyId, CheckIn, CheckOut, TransactionAddress, PaymentConfirmed')
+        `INSERT INTO Reservations (RenterId, PropertyId, CheckIn, CheckOut, TransactionAddress)
         VALUES (?,?,?,?,?,?)`,
-        [RenterId, PropertyId, CheckIn, CheckOut, TransactionAddress, PaymentConfirmed],
+        [RenterId, PropertyId, CheckIn, CheckOut, TransactionAddress],
         (err, result) => {
             if (err) {
                 console.log(err)

@@ -6,6 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from "axios";
 import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { IModalProps } from "../Interfaces/IModalProps";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 const NewProperty: React.FC<IModalProps> = (props: IModalProps) => {
 
@@ -17,6 +18,7 @@ const NewProperty: React.FC<IModalProps> = (props: IModalProps) => {
     const [country, setCountry] = useState<string>('');
     const [postalCode, setPostalCode] = useState<string>('');
     const [photo, setPhoto] = useState<string | null>(null);
+    const [nightlyPrice, setNightlyPrice] = useState<string>('');
 
     const selectImagePicker = async () => {
         if (Platform.OS !== 'web') {
@@ -51,7 +53,8 @@ const NewProperty: React.FC<IModalProps> = (props: IModalProps) => {
             region: region,
             country: country,
             postalCode: postalCode,
-            image: photo
+            image: photo,
+            nightlyPrice: parseFloat(nightlyPrice),
         }).then(() => console.log("success"))
         .then(closeWindow);
     }
@@ -63,6 +66,7 @@ const NewProperty: React.FC<IModalProps> = (props: IModalProps) => {
         setRegion('');
         setCountry('');
         setPostalCode('');
+        setNightlyPrice('');
         setPhoto(null);
     }
 
@@ -116,6 +120,13 @@ const NewProperty: React.FC<IModalProps> = (props: IModalProps) => {
                 onChangeText={(i) => {setPostalCode(i)}}
                 value={postalCode}
                 placeholder={'Postal Code'}
+                style={[styles.addressInput, styles.sectionFont]}
+            />
+            <TextInput 
+                multiline={false}
+                onChangeText={(i) => {setNightlyPrice(i)}}
+                value={nightlyPrice}
+                placeholder={'Nightly Price in SOL'}
                 style={[styles.addressInput, styles.sectionFont]}
             />
             <View style={styles.imagePicker}>

@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSolanaWalletState } from "../Context/SolanaWallet";
-import Data from '../MockData/MockData.json';
+
 
 const Reservations = () => {
     const {account} = useSolanaWalletState();

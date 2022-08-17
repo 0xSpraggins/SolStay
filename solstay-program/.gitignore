@@ -2,3 +2,4 @@ target
 keypair
 dist
 dist/program
+.DS_Store

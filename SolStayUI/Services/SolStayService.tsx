@@ -1,16 +1,14 @@
-import { faBalanceScale, faRandom } from '@fortawesome/free-solid-svg-icons';
-import { getStateFromPath } from '@react-navigation/native';
-import { Keypair, Connection, clusterApiUrl, Cluster, LAMPORTS_PER_SOL, PublicKey, Transaction, SystemProgram, sendAndConfirmTransaction} from '@solana/web3.js';
+import { Keypair, Connection, clusterApiUrl, Cluster, LAMPORTS_PER_SOL, PublicKey, Transaction, SystemProgram, sendAndConfirmTransaction, TransactionInstruction, SYSVAR_RENT_PUBKEY} from '@solana/web3.js';
+import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import * as Bip39 from "bip39";
 import { ethers } from "ethers";
 import * as Random from "expo-random";
-import * as anchor from "../Anchor/dist/browser/index";
-import { useSolanaWalletState } from '../Context/SolanaWallet';
-import { programIdl } from '../programIdl';
-import { useAnchorWallet } from '@solana/wallet-adapter-react';
-const assert = require("assert");
+import * as borsh from "@project-serum/borsh";
+const BN = require('bn.js');
 
 if (typeof Buffer === 'undefined') global.Buffer = require('buffer').Buffer
+const SOLSTAY_PROFIT_PUBKEY  = new PublicKey("73x2NKEnXPo4qMupw75VgLLBTxDHKutJVG7ndPxP3qK");
+
 
 export const solanaConnect = (network: Cluster) => {
     return new Connection(clusterApiUrl(network), 'confirmed');
@@ -46,94 +44,156 @@ export async function accountFromMnemonic(recoveryPhrase: string): Promise<Keypa
 
 }
 
+export async function mintKey(network: Cluster, userWallet: Keypair, propertyOwnerId: PublicKey, totalCost: number): Promise<string | null> {
 
-async function loadAnchor(network: Cluster, payer: Keypair): Promise<anchor.Program> {
-    const programId = new PublicKey(
-        "8PCTb312rhuBU7pM1btq6Dy9XPjrEnqEPQySxxADRjGA"
-    );
+    let functionResult: string | null = null;
 
-    const connection = solanaConnect(network);
-    
-    const provider = new anchor.AnchorProvider(connection, payer,{
-        commitment: "processed",
-    });
+    //Estalish a connection with the Solana Blockchain
+    const connection = await solanaConnect(network);
+    //Init the programId
+    const programId = new PublicKey("GFAeoYkQ7MVDBKoTg4vhfU5nS7BqHZgW4gH5GFiaviPi");
 
-    anchor.setProvider(provider);
-    const newProgram = new anchor.Program(programIdl, programId, provider, undefined);
-    
-    return newProgram;
-}
-
-export async function mintNFT(network: Cluster, userWallet: Keypair): Promise<boolean> {
-    const nftName = "SolStay - Key";
-    const nftSymbol = "STAY";
-    const nftUri = "https://raw.githubusercontent.com/baileyspraggins/SolStay/main/solstay-key-program/tests/Assets/testNftMetadata.json"
-
-
-    const program = await loadAnchor(network, userWallet);
-
-    console.log(program);
-    //const program = anchor.web3.
-    //Import the token metadata program id
-    const TOKEN_METADATA_PROGRAM_ID = new anchor.web3.PublicKey(
-        "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-    );
-    
-    // Create mint address and associated token account address
+    //Derive the mint address and associated token account address
     const mintKeypair: Keypair = await generateKeypair();
-    const tokenAddress = await anchor.utils.token.associatedAddress({
-      mint: mintKeypair.publicKey,
-      owner: userWallet.publicKey,
-    });
+    const tokenAddress = await getAssociatedTokenAddress(
+      mintKeypair.publicKey,
+      userWallet.publicKey
+    );
     console.log(`New token: ${mintKeypair.publicKey}`);
-
-    // create metadata address
-    const metadataAddress = (await anchor.web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("metadata"),
-        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-        mintKeypair.publicKey.toBuffer(),
-      ],
-      TOKEN_METADATA_PROGRAM_ID
-    ))[0];
-    console.log("Metadata created!");
-
-    const masterEditionAddress = (await anchor.web3.PublicKey.findProgramAddress(
-      [
-        Buffer.from("metadata"),
-        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-        mintKeypair.publicKey.toBuffer(),
-        Buffer.from("edition"),
-      ],
-      TOKEN_METADATA_PROGRAM_ID
-    ))[0];
-    console.log("Master Edition Metadata created");
     
-    if (program != null) {
-        try {
-            // Use the mint function from the solstay_key_program
-            await program.methods.mint(
-                nftName, nftSymbol, nftUri
-                ).accounts({
-                metadata: metadataAddress,
-                masterEditionMetadata: masterEditionAddress,
-                mint: mintKeypair.publicKey,
-                tokenAccount: tokenAddress,
-                mintAuthority: userWallet.publicKey,
-                mplTokenMetadata: TOKEN_METADATA_PROGRAM_ID,
-                })
-                .signers([mintKeypair])
-                .rpc().then((response: any) => {console.log(response)});
-        } catch (err) {
-            console.log("could not create NFT");
-            console.log(err);
-            return false;
-        }
-        console.log("NFT Minted");
-    } else {
-        console.log("could not load program");
+    // create metadata address and the masterEdition address from the metaplex token program id
+    const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
+        "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+      );
+    const metadataAddress = (await PublicKey.findProgramAddress(
+        [
+          Buffer.from("metadata"),
+          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+          mintKeypair.publicKey.toBuffer(),
+        ],
+        TOKEN_METADATA_PROGRAM_ID
+      ))[0];
+  
+      const masterEditionAddress = (await PublicKey.findProgramAddress(
+        [
+          Buffer.from("metadata"),
+          TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+          mintKeypair.publicKey.toBuffer(),
+          Buffer.from("edition"),
+        ],
+        TOKEN_METADATA_PROGRAM_ID
+      ))[0];
+    
+      console.log("Metadata and master edition accounts created successfully!");
+
+    // Define the borsh struct and schema definition for creating the data buffer
+    const paymentSchema = borsh.struct([
+        borsh.u64('num_lamports'),
+    ])
+
+    // Cast the amount to a big number to allow it to be encoded
+    const paymentAmount = new BN(totalCost);
+    // Allocate a large buffer size
+    const buffer = Buffer.alloc(1000);
+    
+    //Encode and slice the buffer to get the final databuffer to be sent to on-chain contract
+    paymentSchema.encode({num_lamports: paymentAmount}, buffer);
+    const dataBuffer = buffer.subarray(0, paymentSchema.getSpan(buffer));
+
+    //Create a new transaction instruction
+    const instruction = new TransactionInstruction({
+        keys: [
+            // Mint account
+            {
+                pubkey: mintKeypair.publicKey,
+                isSigner: true,
+                isWritable: true,
+            },
+            // Token account
+            {
+                pubkey: tokenAddress,
+                isSigner: false,
+                isWritable: true,
+            },
+            // Mint Authority
+            {
+                pubkey: userWallet.publicKey,
+                isSigner: true,
+                isWritable: true,
+            },
+            // Rent account
+            {
+                pubkey: SYSVAR_RENT_PUBKEY,
+                isSigner: false,
+                isWritable: false,
+            },
+            // System program
+            {
+                pubkey: SystemProgram.programId,
+                isSigner: false,
+                isWritable: false,
+            },
+            // Token program
+            {
+                pubkey: TOKEN_PROGRAM_ID,
+                isSigner: false,
+                isWritable: false,
+            },
+            // Associated token program
+            {
+                pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
+                isSigner: false,
+                isWritable: false,
+            },
+            // Metdata account
+            {
+                pubkey: metadataAddress,
+                isSigner: false,
+                isWritable: true,
+            },
+            // Master edition metadata account
+            {
+                pubkey: masterEditionAddress,
+                isSigner: false,
+                isWritable: true,
+            },
+            // Metaplex Token metadata account
+            {
+                pubkey: TOKEN_METADATA_PROGRAM_ID,
+                isSigner: false,
+                isWritable: false
+            },
+            // Property owner account
+            {
+                pubkey: propertyOwnerId,
+                isSigner: false,
+                isWritable: true,
+            },
+            // Solstay profit account
+            {
+                pubkey: SOLSTAY_PROFIT_PUBKEY,
+                isSigner: false,
+                isWritable: true,
+            }
+        ],
+        programId: programId,
+        data: dataBuffer,
+    })
+
+    try {
+        await sendAndConfirmTransaction(
+            connection,
+            new Transaction().add(instruction),
+            [userWallet, mintKeypair],
+        ).then((response) => {
+            functionResult = response;
+        });
+    } catch (err) {
+        console.log(err);
+        functionResult = null;
     }
-    return true;
+
+    return functionResult;
 
 }
 

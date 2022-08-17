@@ -1,9 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import Data from '../MockData/MockData.json';
 import ReservationModal from "./ReservationModal";
-const MockHousePicture = require('../assets/images/mock_house_picture.png');
 
 const AvailableProperties = () => {
     const [availableProperties, setAvailableProperties] = useState<any[]>();
@@ -45,7 +43,7 @@ const AvailableProperties = () => {
                                 {/* <Text style={[styles.pageText]}>Owner: {x.OwnerId.substring(0,12)}...</Text> */}
                                 <View style={styles.priceContainer}>
                                     {/* Hardcoded price value for now */}
-                                    <Text style={[styles.pageText, styles.priceText]}>5 Sol</Text>
+                                    <Text style={[styles.pageText, styles.priceText]}>{x.NightlyPrice} Sol</Text>
                                     <Text style={[styles.pageText, styles.perNightText]}>/per night</Text>
                                 </View>
                             </View>
