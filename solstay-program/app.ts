@@ -17,8 +17,7 @@ import {
 import {
     createKeypairFromFile,
 } from './util';
-import os from 'os';
-import path from 'path';
+
 import * as borsh from '@project-serum/borsh';
 const BN = require('bn.js');
 
@@ -38,7 +37,7 @@ export async function main() {
     const wallet = await createKeypairFromFile('./keypair');
     console.log(`Local account loaded successfully.`);
     
-    const programId = new PublicKey("C8RnUrXm2TUQ6SKTEnUxcuDPhLSwNY3yQDgiQnJ5pYbW");
+    const programId = new PublicKey("GFAeoYkQ7MVDBKoTg4vhfU5nS7BqHZgW4gH5GFiaviPi");
 
 
     // Property ownerId
