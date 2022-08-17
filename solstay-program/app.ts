@@ -12,38 +12,37 @@ import {
     TransactionInstruction,
     Transaction,
     sendAndConfirmTransaction,
+    LAMPORTS_PER_SOL,
 } from '@solana/web3.js';
 import {
     createKeypairFromFile,
 } from './util';
-import fs from 'mz/fs';
 import os from 'os';
 import path from 'path';
-import yaml from 'yaml';
-
-
-// Path to local Solana CLI config file.
-const CONFIG_FILE_PATH = path.resolve(
-    os.homedir(),
-    '.config',
-    'solana',
-    'cli',
-    'config.yml',
-);
+import * as borsh from '@project-serum/borsh';
+const BN = require('bn.js');
 
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
     "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
   );
+
+// Use as SOLSTAY Profit account
+const SOLSTAY_PUBKEY = new PublicKey("73x2NKEnXPo4qMupw75VgLLBTxDHKutJVG7ndPxP3qK");
 
 export async function main() {
 
     const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
     console.log(`Successfully connected to Solana dev net.`);
 
+    // Logged in users account
     const wallet = await createKeypairFromFile('./keypair');
     console.log(`Local account loaded successfully.`);
     
-    const programId = new PublicKey("qp6AXASEsVhzxsY3Q3So9zD3523YBk4iJMncbTsZGEF");
+    const programId = new PublicKey("C8RnUrXm2TUQ6SKTEnUxcuDPhLSwNY3yQDgiQnJ5pYbW");
+
+
+    // Property ownerId
+    const propertyOwnerPublicKey = new PublicKey("9rwdVvqDC1NrPPVp4Ygaaoc5UY5pG3JzjByBXYoJ2LB6");
 
     console.log(`Program ID: ${programId.toBase58()}`);
 
@@ -76,8 +75,23 @@ export async function main() {
         ],
         TOKEN_METADATA_PROGRAM_ID
       ))[0];
+    
+    // Define the borsh struct and schema definition for creating the
+    const paymentSchema = borsh.struct([
+        borsh.u64('num_lamports'),
+    ])
 
-      console.log("Master Edition Created");
+    const paymentAmount = new BN(2 * LAMPORTS_PER_SOL);
+
+    const buffer = Buffer.alloc(100);
+    paymentSchema.encode({num_lamports: paymentAmount}, buffer);
+
+    const dataBuffer = buffer.subarray(0, paymentSchema.getSpan(buffer));
+
+
+    console.log(dataBuffer);
+
+    console.log("Master Edition Created");
     // Transact with our program
     // Update this code in order to mint an NFT with metadata
     const instruction = new TransactionInstruction({
@@ -98,7 +112,7 @@ export async function main() {
             {
                 pubkey: wallet.publicKey,
                 isSigner: true,
-                isWritable: false,
+                isWritable: true,
             },
             // Rent account
             {
@@ -141,10 +155,22 @@ export async function main() {
                 pubkey: TOKEN_METADATA_PROGRAM_ID,
                 isSigner: false,
                 isWritable: false
+            },
+            // Property owner account
+            {
+                pubkey: propertyOwnerPublicKey,
+                isSigner: false,
+                isWritable: true,
+            },
+            // Solstay wallet account
+            {
+                pubkey: SOLSTAY_PUBKEY,
+                isSigner: false,
+                isWritable: true,
             }
         ],
         programId: programId,
-        data: Buffer.alloc(0),
+        data: dataBuffer,
     })
     await sendAndConfirmTransaction(
         connection,

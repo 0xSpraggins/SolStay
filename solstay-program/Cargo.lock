@@ -3827,6 +3827,8 @@ dependencies = [
 name = "solstay-program"
 version = "0.1.0"
 dependencies = [
+ "borsh",
+ "borsh-derive",
  "getrandom 0.2.7",
  "mpl-token-metadata",
  "solana-program",

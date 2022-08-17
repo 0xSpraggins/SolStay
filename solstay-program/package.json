@@ -9,9 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@project-serum/borsh": "^0.2.5",
     "@solana/buffer-layout": "^4.0.0",
     "@solana/spl-token": "^0.2.0",
     "@solana/web3.js": "^1.44.1",
+    "bn.js": "^5.2.1",
+    "borsh": "^0.7.0",
     "mz": "^2.7.0",
     "ts-node": "^10.8.1",
     "yaml": "^2.1.1"

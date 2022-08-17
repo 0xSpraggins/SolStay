@@ -9,6 +9,8 @@ spl-token = { version="3.3.0", features = [ "no-entrypoint" ] }
 spl-associated-token-account = { version="1.0.5", features = [ "no-entrypoint" ] }
 getrandom = { version = "0.2.2", features = ["custom"] }
 mpl-token-metadata = { version = "1.3.4", features = [ "no-entrypoint" ] }
+borsh = "0.9.3"
+borsh-derive = "0.9.3"
 
 [dev-dependencies]
 solana-program-test = "1.10.26"
