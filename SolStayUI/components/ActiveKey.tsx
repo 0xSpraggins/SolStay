@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 const nft_image = require('../assets/images/nft_key_image.png');
-import Data from '../MockData/MockData.json';
+
 const ActiveKey = () => {
     return(
         <View style={styles.activeKeyContainer}>

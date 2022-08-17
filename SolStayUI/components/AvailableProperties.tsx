@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import LoadingScreen from "./LoadingScreen";
 import ReservationModal from "./ReservationModal";
 
 const AvailableProperties = () => {
@@ -15,6 +16,7 @@ const AvailableProperties = () => {
         })
     })
 
+    
     const reserveBtn_Click = (propertyId: number) => {
         setModalIdValue(propertyId);
         setModalVisible(!modalVisible);
@@ -22,7 +24,7 @@ const AvailableProperties = () => {
 
     if (!availableProperties) {
         return (
-            <Text>Loading...</Text>
+            <LoadingScreen />
         )
     } else {
         return (
@@ -109,6 +111,8 @@ const styles = StyleSheet.create({
     cardButtonContainer: {
         flexDirection: 'row',
         marginLeft: 15,
+        position: "absolute",
+        bottom: 10,
         
     },
     propertyDetails: {
@@ -161,8 +165,8 @@ const styles = StyleSheet.create({
     },
     modalView: {
         backgroundColor: "#ffffff",
-        height: 400,
-        width: 300,
+        height: 550,
+        width: 350,
         borderBottomColor: "000000",
         borderRadius: 10,
         borderWidth: 4,

@@ -7,6 +7,7 @@ import Navigation from './navigation/Navigation';
 import { SolanaWalletContext } from './Context/SolanaWallet';
 import { Cluster, Keypair } from '@solana/web3.js';
 import 'react-native-get-random-values';
+import LoadingScreen from './components/LoadingScreen';
 
 const Stack = createStackNavigator();
 
@@ -24,7 +25,9 @@ export default function App() {
   const [isOwner, setIsOwner] = useState<boolean>(false);
   
   if (!isLoadingComplete) {
-    return null;
+    return (
+      <LoadingScreen />
+    );
   } else {
     return (
       <SolanaWalletContext.Provider value={{network, setNetwork, account, setAccount, mnemonic, setMnemonic, balance, setBalance, isOwner, setIsOwner}}>

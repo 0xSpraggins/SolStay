@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { Property } from "../Models/Properties";
+import LoadingScreen from "./LoadingScreen";
 
 const OwnedProperties = () => {
     const {account} = useSolanaWalletState();
@@ -17,11 +18,11 @@ const OwnedProperties = () => {
             const data = (response.data);
             setFetchedData(data);
         });
-    }, []);
+    },);
 
     if (!fetchedData) {
         return (
-            <Text>Loading....</Text>
+            <LoadingScreen />
         )
     } else {
         return (

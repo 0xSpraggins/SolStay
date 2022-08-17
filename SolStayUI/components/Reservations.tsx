@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSolanaWalletState } from "../Context/SolanaWallet";
+import LoadingScreen from "./LoadingScreen";
 
 
 const Reservations = () => {
@@ -21,7 +22,7 @@ const Reservations = () => {
     
     if (!fetchedData) {
         return (
-            <Text>Loading...</Text>
+            <LoadingScreen />
         )
     } else {
         return(

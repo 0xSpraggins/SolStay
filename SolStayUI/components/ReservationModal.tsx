@@ -6,6 +6,7 @@ import DatePicker from 'react-native-date-picker';
 import * as solStayService from '../Services/SolStayService';
 import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import LoadingScreen from "./LoadingScreen";
 
 const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
     const [fetchedData, setFetchedData] = useState<any[]>();
@@ -14,7 +15,7 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
     const [checkOutOpen, setCheckOutOpen] = useState<boolean>(false);
     const [checkOutDate, setCheckOutDate] = useState(new Date());
     const [numberOfNights, setNumberOfNights] = useState<number>(0);
-    const {account, network} = useSolanaWalletState();
+    const {account, network, setBalance} = useSolanaWalletState();
     const [transactionId, setTransactionId] = useState<string | null>(null);
     
     useEffect(() => {
@@ -27,13 +28,18 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
         })
     },[])
 
+    const refreshBalance = async () => {
+        const balance = await solStayService.getBalance(account, network);
+        setBalance(balance);
+    }
+
     const saveReservation = (transactionAddress: string) => {
         if (fetchedData) {
             axios.post('http://localhost:3003/saveReservation', {
                 renterId: account?.publicKey,
                 propertyId: fetchedData[0].Id,
-                checkIn: checkInDate,
-                checkOut: checkOutDate, 
+                checkIn: checkInDate.toLocaleDateString(),
+                checkOut: checkOutDate.toLocaleDateString(), 
                 transactionAddress: transactionAddress,
             }).then((response) => console.log(response));
         }
@@ -48,13 +54,16 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
             let reservationCost: number = (fetchedData[0].NightlyPrice * LAMPORTS_PER_SOL)
 
             solStayService.mintKey(network, account, ownerPubKey, reservationCost).then((response) => {
-                console.log(response);
                 setTransactionId(response);
+                console.log(response);
             });
-        
+            
+
             if (transactionId != null) {
                 await saveReservation(transactionId);
                 alert("Reservation Confirmed!");
+                refreshBalance();
+                props.onClose();
             } else {
                 alert("Transaction Failed, please try again");
             }
@@ -76,7 +85,7 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
 
     if (!fetchedData) {
         return (
-            <Text>Loading...</Text>
+            <LoadingScreen />
         )
     } else {
         return (
@@ -90,7 +99,7 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
                 <View style={styles.propertyDescription}>
                     <Text style={[styles.modalText, styles.addressText]}>{fetchedData[0].AddressOne}, {fetchedData[0].AddressTwo}</Text>
                     <Text style={[styles.modalText, styles.addressText]}>{fetchedData[0].City}, {fetchedData[0].Region}, {fetchedData[0].PostalCode}</Text>
-                    <Text style={[styles.modalText, styles.addressText]}>{fetchedData[0].NightlyPrice} SOL/per night</Text>
+                    {/* <Text style={[styles.modalText, styles.addressText]}>{fetchedData[0].NightlyPrice} SOL/per night</Text> */}
                 </View>
                 <View style={styles.reservationDateContainer}>
                     <View style={styles.dateRow}>
@@ -100,7 +109,7 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
                                 setCheckInOpen(!checkInOpen);
                             }}
                         >
-                            <Text style={[styles.modalText, styles.dateSelectText]}>Check In</Text>
+                            <Text style={[styles.modalText, styles.dateSelectText]}>Set Check In</Text>
                         </Pressable>
                         <Text style={[styles.modalText, styles.activeReservationDate]}>{checkInDate.toDateString()}</Text>
                     </View>
@@ -111,13 +120,16 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
                                 setCheckOutOpen(!checkOutOpen);
                             }}
                         >
-                            <Text style={[styles.modalText, styles.dateSelectText]}>Check Out</Text>
+                            <Text style={[styles.modalText, styles.dateSelectText]}>Set Check Out</Text>
                         </Pressable>
                         <Text style={[styles.modalText, styles.activeReservationDate]}>{checkOutDate.toDateString()}</Text>
                     </View>
                 </View>
-                <View>
-                    <Text style={[styles.modalText]}>{fetchedData[0].NightlyPrice} SOL x {numberOfNights} Nights + 1.015 Security Deposit = {numberOfNights * fetchedData[0].NightlyPrice} SOL</Text>
+                <View style={styles.priceContainer}>
+                    <Text style={[styles.modalText,styles.pricingText]}>{fetchedData[0].NightlyPrice} SOL x {numberOfNights} Nights = {(numberOfNights * fetchedData[0].NightlyPrice).toPrecision(3)} SOL</Text>
+                    <Text style={[styles.modalText, styles.pricingText]}>+ Security Deposit = 1.015 SOL</Text>
+                    <View style={styles.additionLine}></View>
+                    <Text style={[styles.modalText,styles.pricingText]}>Total = {((numberOfNights * fetchedData[0].NightlyPrice) + 1.015).toPrecision(4)} SOL</Text>
                 </View>
                 <View style={styles.reservationActions}>
                     <Pressable
@@ -191,14 +203,15 @@ const styles = StyleSheet.create({
         borderWidth: 2,
     },
     propertyDescription: {
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom: 10,
     },
     datepickBtn: {
-        width: 75,
+        width: 100,
         height: 25,
         borderWidth: 2,
         borderRadius: 10,
-        backgroundColor: 'pink',
+        backgroundColor: '#999999',
         alignContent: 'center',
         justifyContent: 'center',
         alignItems: 'center',
@@ -210,8 +223,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     actionBtn: {
-        width: 100,
-        height: 35,
+        width: 120,
+        height: 40,
         borderRadius: 10,
         marginHorizontal: 5,
         alignItems: 'center',
@@ -235,16 +248,35 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     addressText: {
-        fontSize: 15,
+        fontSize: 25,
     },
     dateRow: {
         flexDirection: 'row',
+        marginVertical: 5,
     },
     dateSelectText: {
-        fontSize: 16,
+        fontSize: 12,
+        color: "#ffffff",
+        textShadowColor: "#000000"
     },
     activeReservationDate: {
         fontSize: 18,
+    },
+    reservationDateContainer: {
+        marginBottom: 20,
+    },
+    additionLine: {
+        width: 310,
+        height: 4,
+        backgroundColor: "#000000"
+    },
+    priceContainer: {
+        alignItems: 'flex-end',
+        paddingEnd: 5,
+        marginBottom: 25
+    },
+    pricingText: {
+        fontSize: 22
     }
 
 });

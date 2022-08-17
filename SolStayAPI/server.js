@@ -94,7 +94,7 @@ app.post('/newProperty', (req, res) => {
 
     connection.query(
         `INSERT INTO Properties (OwnerId, AddressOne, AddressTwo, City, Region, Country, PostalCode, ImageOne, NightlyPrice)
-        VALUES (?,?,?,?,?,?,?,?)`,
+        VALUES (?,?,?,?,?,?,?,?,?)`,
         [Pubkey, AddressOne, AddressTwo, City, Region, Country, PostalCode, Image, NightlyPrice],
         (err, result) => {
             if (err) {
@@ -159,7 +159,7 @@ app.post('/saveReservation', (req, res) => {
 
     connection.query(
         `INSERT INTO Reservations (RenterId, PropertyId, CheckIn, CheckOut, TransactionAddress)
-        VALUES (?,?,?,?,?,?)`,
+        VALUES (?,?,?,?,?)`,
         [RenterId, PropertyId, CheckIn, CheckOut, TransactionAddress],
         (err, result) => {
             if (err) {
