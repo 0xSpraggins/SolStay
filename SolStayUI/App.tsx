@@ -25,9 +25,7 @@ export default function App() {
   const [isOwner, setIsOwner] = useState<boolean>(false);
   
   if (!isLoadingComplete) {
-    return (
-      <LoadingScreen />
-    );
+    return null;
   } else {
     return (
       <SolanaWalletContext.Provider value={{network, setNetwork, account, setAccount, mnemonic, setMnemonic, balance, setBalance, isOwner, setIsOwner}}>
