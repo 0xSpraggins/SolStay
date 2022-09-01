@@ -1,6 +1,6 @@
 # SolStay
 
-A mobile app built for Solana Summer Camo 2022 that uses Solana NFTs and Near Field Communication as keys for rental homes.
+A mobile app built for Solana Summer Camp 2022 that uses Solana NFTs and Near Field Communication as keys for rental homes.
 
 ## Repository Contents
 
