@@ -121,10 +121,15 @@ app.get('/getAllProperties', (req, res) => {
 
 app.get('/getUsersReservations', (req, res) => {
     const Pubkey = req.query.pubkey;
+    const Date = req.query.date;
     console.log(Pubkey);
     connection.query(
-        'SELECT * FROM Reservations WHERE RenterId = ?',
-        [Pubkey],
+        `SELECT Reservations.Id, Properties.AddressOne, Reservations.CheckIn
+            FROM Reservations
+            INNER JOIN Properties ON Reservations.PropertyId = Properties.Id
+            WHERE RenterId = ?
+            AND Reservations.CheckOut >= ?`,
+        [Pubkey, Date],
         (err, result) => {
             if (err) {
                 console.log(err);
@@ -133,6 +138,31 @@ app.get('/getUsersReservations', (req, res) => {
             }
         }
     )
+})
+
+app.get('/getActiveReservation', (req, res) => {
+    const Pubkey = req.query.pubkey;
+    const Date = req.query.date;
+    console.log(Pubkey);
+    connection.query(
+        `SELECT Reservations.Id, Reservations.TransactionAddress, 
+                Properties.AddressOne, Properties.AddressTwo, 
+                Properties.City, Properties.Region,Properties.PostalCode
+            FROM Reservations
+            INNER JOIN Properties ON Reservations.PropertyId = Properties.Id
+            WHERE RenterId = ?
+            AND Reservations.CheckIn <= ?
+            AND Reservations.CheckOut >= ?
+            LIMIT 1`,
+        [Pubkey, Date, Date],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send(result);
+            }
+        }
+    ) 
 })
 
 app.get('/getPropertyDetails', (req, res) => {

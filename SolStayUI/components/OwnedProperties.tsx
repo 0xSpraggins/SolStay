@@ -1,13 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import {Image, Pressable, StyleSheet, Text, View} from "react-native";
 import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { Property } from "../Models/Properties";
 import LoadingScreen from "./LoadingScreen";
 
 const OwnedProperties = () => {
     const {account} = useSolanaWalletState();
-    const [fetchedData, setFetchedData] = useState<any[]>()
+    const [fetchedData, setFetchedData] = useState<any[]>();
+    const [selectedProperty, setSelectedProperty] = useState();
 
     useEffect(() => {
         axios.get('http://localhost:3003/getUserProperties', {
@@ -18,7 +19,12 @@ const OwnedProperties = () => {
             const data = (response.data);
             setFetchedData(data);
         });
-    },);
+    },[]);
+
+    function selectProperty_Click(selectedItem: any) {
+        setSelectedProperty(selectedItem);
+    }
+
 
     if (!fetchedData) {
         return (
@@ -28,20 +34,24 @@ const OwnedProperties = () => {
         return (
             <View>
                 {fetchedData.map((x) => (
-                    <View style={styles.propertyContainer} key={x.Id}>
-                        <View style={styles.imageContainer}>
-                            <Image source={{uri: x.ImageOne}} style={{height: '100%', width: '100%'}} />
-                        </View>
-                        <View>
-                            <Text>{x.AddressOne}</Text>
-                            {(x.AddressTwo.length > 1) ? <Text>{x.AddressTwo}</Text> : null}
-                            <View style={styles.addressLineThree}>
-                                <Text>{x.City}, </Text>
-                                <Text>{x.Region} </Text>
-                                <Text>{x.PostalCode}</Text>
+                    <Pressable
+                            onPress={() => selectProperty_Click(x.Id)}
+                    >
+                        <View style={[styles.propertyContainer, (selectedProperty === x.Id) ? styles.selectedContainer: null]} key={x.Id}>
+                            <View style={styles.imageContainer}>
+                                <Image source={{uri: x.ImageOne}} style={{height: '100%', width: '100%'}} />
+                            </View>
+                            <View>
+                                <Text style={styles.addressText}>{x.AddressOne}</Text>
+                                {(x.AddressTwo.length > 1) ? <Text style={styles.addressText}>{x.AddressTwo}</Text> : null}
+                                <View style={styles.addressLineThree}>
+                                    <Text style={styles.addressText}>{x.City}, </Text>
+                                    <Text style={styles.addressText}>{x.Region} </Text>
+                                    <Text style={styles.addressText}>{x.PostalCode}</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
+                    </Pressable>
                 ))}
             </View>
         );
@@ -51,16 +61,26 @@ const OwnedProperties = () => {
 const styles = StyleSheet.create({
     propertyContainer: {
         alignItems: 'center',
-        justifyContent: "center",
         flexDirection: 'row',
+        marginVertical: 5,
     },
     imageContainer: {
         height: 100,
         width: 100,
         borderWidth: 1,
+        marginRight: 20,
+        marginLeft: 10,
     },
     addressLineThree: {
         flexDirection: 'row'
+    },
+    addressText: {
+        fontFamily: 'suez-one',
+        fontSize: 18,
+    },
+    selectedContainer: {
+        backgroundColor: '#D7E6F8',
+        paddingVertical: 10,
     }
 })
 

@@ -21,7 +21,7 @@ A React Native Application that resembles a web3 experience for users wanting to
 - Set multiple reservation ability dates and times
 - More detailed property descriptions
 - Deposit and withdraw Sol
-- Delete properties
+- Delete & editing properties
 
 ## How to use
 

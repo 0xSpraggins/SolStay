@@ -4,6 +4,8 @@ import * as Bip39 from "bip39";
 import { ethers } from "ethers";
 import * as Random from "expo-random";
 import * as borsh from "@project-serum/borsh";
+import Metaplex from "../js-react-native/Metaplex";
+
 const BN = require('bn.js');
 
 if (typeof Buffer === 'undefined') global.Buffer = require('buffer').Buffer
@@ -73,7 +75,9 @@ export async function mintKey(network: Cluster, userWallet: Keypair, propertyOwn
         ],
         TOKEN_METADATA_PROGRAM_ID
       ))[0];
-  
+
+    console.log("Metadata Address", metadataAddress);
+
       const masterEditionAddress = (await PublicKey.findProgramAddress(
         [
           Buffer.from("metadata"),
@@ -254,4 +258,5 @@ export async function airDropSol(account: Keypair, network: Cluster): Promise<bo
     }
     return true;
 }
+
 

@@ -1,12 +1,14 @@
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import React, { useContext, useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import AccountTypeModal from "../components/SettingsScreenModals/AccountTypeModal";
+import AccountTypeModal from "../components/Modals/AccountTypeModal";
 import { useSolanaWalletState } from "../Context/SolanaWallet";
 import { IStackScreenProps } from "../navigation/StackScreenProps";
 import * as solStayService from '../Services/SolStayService';
 import * as encryptedStorage from '../Services/EncryptedStorageService';
-import ManagePropertiesModal from "../components/SettingsScreenModals/ManagePropertiesModal";
+import ManagePropertiesModal from "../components/Modals/ManagePropertiesModal";
+
+//TODO: Account balance refresh doesnt load on mount?
 
 const SettingsScreen: React.FunctionComponent<IStackScreenProps> = (props) => {
     const {navigation, route, nameProp} = props;

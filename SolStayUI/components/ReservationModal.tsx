@@ -16,7 +16,6 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
     const [checkOutDate, setCheckOutDate] = useState(new Date());
     const [numberOfNights, setNumberOfNights] = useState<number>(0);
     const {account, network, setBalance} = useSolanaWalletState();
-    const [transactionId, setTransactionId] = useState<string | null>(null);
     
     useEffect(() => {
         axios.get('http://localhost:3003/getPropertyDetails', {
@@ -53,16 +52,12 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
             //Calculate the final price plus security deposit for the transaction
             let reservationCost: number = (fetchedData[0].NightlyPrice * LAMPORTS_PER_SOL)
 
-            solStayService.mintKey(network, account, ownerPubKey, reservationCost).then((response) => {
-                setTransactionId(response);
-                console.log(response);
-            });
-            
+            let transactionId = await solStayService.mintKey(network, account, ownerPubKey, reservationCost);
 
             if (transactionId != null) {
                 await saveReservation(transactionId);
                 alert("Reservation Confirmed!");
-                refreshBalance();
+                await refreshBalance();
                 props.onClose();
             } else {
                 alert("Transaction Failed, please try again");

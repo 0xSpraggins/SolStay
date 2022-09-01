@@ -10,7 +10,7 @@ A mobile app built for Solana Summer Camo 2022 that uses Solana NFTs and Near Fi
 
 ## Walkthrough Video
 
-- Coming soon...
+- https://vimeo.com/745511171
 
 ## Pitchdeck
 
