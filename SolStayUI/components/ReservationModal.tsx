@@ -18,7 +18,7 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
     const {account, network, setBalance} = useSolanaWalletState();
     
     useEffect(() => {
-        axios.get('http://localhost:3003/getPropertyDetails', {
+        axios.get('http://localhost:3003/properties/:id', {
             params: {
                 id: props.input
             }
@@ -34,7 +34,7 @@ const ReservationModal: React.FC<IModalProps> = (props: IModalProps) => {
 
     const saveReservation = (transactionAddress: string) => {
         if (fetchedData) {
-            axios.post('http://localhost:3003/saveReservation', {
+            axios.post('http://localhost:3003/reservations', {
                 renterId: account?.publicKey,
                 propertyId: fetchedData[0].Id,
                 checkIn: checkInDate.toLocaleDateString(),

@@ -10,7 +10,7 @@ const AvailableProperties = () => {
     const [modalIdValue, setModalIdValue] = useState<number>();
 
     useEffect(() => {
-        axios.get('http://localhost:3003/getAllProperties').then((response) => {
+        axios.get('http://localhost:3003/properties').then((response) => {
             const data = (response.data);
             setAvailableProperties(data);
         })

@@ -18,4 +18,4 @@ A mobile app built for Solana Summer Camp 2022 that uses Solana NFTs and Near Fi
 
 ## Demo Testing Instructions
 
-- Currently the backend API runs on a local development server. As soon as I transfer it to a production server App will be available to demo through TestFlight.
+- Currently, the backend API runs on a local development server. As soon as I transfer it to a production server App will be available to demo through TestFlight.

@@ -26,14 +26,14 @@ const ImportAccount: React.FunctionComponent<IStackScreenProps> = (props) => {
     }
 
     const addUser = (pubKey: string) => {
-        axios.post('http://localhost:3003/user', 
+        axios.post('http://localhost:3003/users',
         {pubkey: pubKey, isOwner: false})
         .then(() => console.log("success")); 
     }
 
     const getUser = (publicKey: string) => {
 
-        axios.get('http://localhost:3003/getUser', {
+        axios.get('http://localhost:3003/users/:pubkey', {
             params: {
                 pubkey: publicKey
             }

@@ -21,7 +21,7 @@ const AccountTypeModal: React.FC<IModalProps> = ( props: IModalProps) => {
     } 
 
     const changeAccountType = () => {
-        axios.put('http://localhost:3003/updateUser', {
+        axios.put('http://localhost:3003/users/:pubkey', {
                 pubkey: account?.publicKey,
                 isOwner: (isOwner) ? 1 : 0})
         .then((response) => console.log(response))

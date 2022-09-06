@@ -45,7 +45,7 @@ const NewProperty: React.FC<IModalProps> = (props: IModalProps) => {
 
     const addNewProperty = () => {
         //const imageData = new FormData();
-        axios.post('http://localhost:3003/newProperty', {
+        axios.post('http://localhost:3003/properties', {
             pubkey: account?.publicKey,
             addressOne: addressOne,
             addressTwo: addressTwo,

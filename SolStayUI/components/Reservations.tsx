@@ -11,7 +11,7 @@ const Reservations = () => {
     const [fetchedData, setFetchedData] = useState<any[]>();
 
     useEffect(() => {
-        axios.get('http://localhost:3003/getUsersReservations', {
+        axios.get('http://localhost:3003/reservations/:renterId', {
             params: {
                 pubkey: account?.publicKey.toString(),
                 date: new Date().toLocaleDateString(),

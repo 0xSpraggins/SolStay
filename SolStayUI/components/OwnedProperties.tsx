@@ -11,7 +11,7 @@ const OwnedProperties = () => {
     const [selectedProperty, setSelectedProperty] = useState();
 
     useEffect(() => {
-        axios.get('http://localhost:3003/getUserProperties', {
+        axios.get('http://localhost:3003/properties/:ownerId', {
             params: {
                 pubkey: account?.publicKey.toString()
             }

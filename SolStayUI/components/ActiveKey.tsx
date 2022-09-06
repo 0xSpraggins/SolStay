@@ -11,7 +11,7 @@ const ActiveKey = () => {
     const {account, network} = useSolanaWalletState();
 
     useEffect(() => {
-        axios.get('http://localhost:3003/getActiveReservation', {
+        axios.get('http://localhost:3003/reservations/active/:renterId', {
             params: {
                 pubkey: account?.publicKey.toString(),
                 date: new Date().toLocaleDateString(),

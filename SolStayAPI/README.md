@@ -26,7 +26,7 @@ The backend of the SolStay Application built using NodeJS, ExpressJS, Sequelize,
     - Post (new reservation)
         - "/"
     - Get (user's active reservation)
-        - "/activeReservation/:renterId" 
+        - "/active/:renterId" 
     - Get (all user's reservations)
         - "/:renterId"
 
