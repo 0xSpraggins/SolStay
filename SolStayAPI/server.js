@@ -1,36 +1,50 @@
 const express = require('express');
-const app = express();
 const mysql = require('mysql');
 const config = require('./config.json');
 const cors = require('cors');
 
+// import routes
+const users = require('./routes/users');
+const properties = require('./routes/properties');
+const reservations = require('./routes/reservations');
+
+//Initialize server app
+const app = express();
+
+//Add cors and json formatting to the API
 app.use(cors());
 app.use(express.json());
 
-const connection = mysql.createConnection({
-    host: config.ConnectionString.host,
-    user: config.ConnectionString.user,
-    password: config.ConnectionString.password,
-    database: config.ConnectionString.database,
-    port: config.ConnectionString.port,
-})
+//Add routes to the express server
+app.use("/users", users);
+app.use('/properties', properties);
+app.use('/reservations', reservations);
 
-app.post('/user', (req, res) => {
-    const Pubkey = req.body.pubkey;
-    const IsOwner = req.body.isOwner;
+const db = require("./models");
+db.sequelize.sync()
+    .then(() => {
+        console.log('Synced database');
+    })
+    .catch((err) => {
+        console.log("Failed to sync db" + err.message);
+    });
 
-    connection.query(
-        'INSERT INTO Users (Pubkey, IsOwner) VALUES (?,?)', 
-        [Pubkey,IsOwner],
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.send("Values Inserted");
-            }
-        }
-    )}
-);
+// app.post('/user', (req, res) => {
+//     const Pubkey = req.body.pubkey;
+//     const IsOwner = req.body.isOwner;
+//
+//     connection.query(
+//         'INSERT INTO Users (Pubkey, IsOwner) VALUES (?,?)',
+//         [Pubkey,IsOwner],
+//         (err, result) => {
+//             if (err) {
+//                 console.log(err);
+//             } else {
+//                 res.send("Values Inserted");
+//             }
+//         }
+//     )}
+// );
 
 app.get('/getUser', (req, res) => {
     const Pubkey = req.query.pubkey;
@@ -140,6 +154,7 @@ app.get('/getUsersReservations', (req, res) => {
     )
 })
 
+// If 0 return something
 app.get('/getActiveReservation', (req, res) => {
     const Pubkey = req.query.pubkey;
     const Date = req.query.date;

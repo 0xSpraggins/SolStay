@@ -1,9 +1,8 @@
-import React, { useState, ChangeEvent } from "react";
-import { Button, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSolanaWalletState } from "../../Context/SolanaWallet";
 import { Switch } from "@react-native-material/core";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import * as solStayService from '../../Services/SolStayService';
 import { IModalProps } from "../../Interfaces/IModalProps";
@@ -89,7 +88,7 @@ const AccountTypeModal: React.FC<IModalProps> = ( props: IModalProps) => {
 
                 <Pressable 
                     style={[styles.btnAlignment, styles.airdropSolBtn, (network === 'mainnet-beta') ? styles.disabledBtn : null]}
-                    disabled={(network === 'mainnet-beta' ? true : false)}
+                    disabled={(network === 'mainnet-beta')}
                     onPress={requestSol_Click}
                 >
                     <Text style={[styles.btnText, styles.solAirdropText]}>Airdrop 2 SOL</Text>

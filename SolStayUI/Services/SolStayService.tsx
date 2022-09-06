@@ -4,7 +4,6 @@ import * as Bip39 from "bip39";
 import { ethers } from "ethers";
 import * as Random from "expo-random";
 import * as borsh from "@project-serum/borsh";
-import Metaplex from "../js-react-native/Metaplex";
 
 const BN = require('bn.js');
 
