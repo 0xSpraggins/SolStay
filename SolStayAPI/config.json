@@ -1,9 +1,0 @@
-{
-    "ConnectionString": {
-        "host": "127.0.0.1",
-        "user": "solstaydev",
-        "password": "SolanaSummer22",
-        "database": "SolStay",
-        "port": "3306"
-    }
-}
