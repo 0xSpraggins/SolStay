@@ -4,6 +4,6 @@ module.exports = app => {
     const router = require("express").Router();
 
     router.post("/", users.create);
-    //router.get("/:pubkey", users.getUser);
-    //router.update("/:pubkey", users.update);
+    router.get("/:pubkey", users.getUser);
+    router.put("/:pubkey", users.update);
 }
