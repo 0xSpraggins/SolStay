@@ -7,7 +7,10 @@ const sequelize = new Sequelize.Sequelize(
     config.ConnectionString.password, {
         host: config.ConnectionString.host,
         dialect: "mysql",
-        port: config.ConnectionString.port
+        port: config.ConnectionString.port,
+        dialectOptions: {
+            connectionTimeout: 100000
+        }
     }
 );
 
